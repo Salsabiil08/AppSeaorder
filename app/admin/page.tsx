@@ -62,6 +62,13 @@ export default function AdminDashboard() {
       refreshMejasOnly();
     });
 
+    const unsubscribeAlertBroadcast = dbService.listenToOrderAlerts((newOrder) => {
+      if (knownOrderIds.current.has(newOrder.id_pemesanan)) return;
+      knownOrderIds.current.add(newOrder.id_pemesanan);
+      triggerNewOrderAlarm(newOrder);
+      refreshOrdersOnly();
+    });
+
     // Fallback for devices where realtime websocket events are delayed/blocked.
     const polling = setInterval(async () => {
       const latest = await dbService.getOrderHistory();
@@ -78,6 +85,7 @@ export default function AdminDashboard() {
       clearInterval(polling);
       unsubscribeNew();
       unsubscribeUpdates();
+      unsubscribeAlertBroadcast();
     };
   }, [router]);
 
@@ -203,6 +211,12 @@ export default function AdminDashboard() {
     if (!newMenuName.trim() || !Number(newMenuPrice)) return;
     const added = await dbService.addMenu({ nama_menu: newMenuName.trim(), harga: Number(newMenuPrice), kategori: "Makanan", stok_status: "tersedia", image: newMenuImage, deskripsi: newMenuDescription });
     setMenus((all) => [...all, added]); setNewMenuName(""); setNewMenuPrice(""); setNewMenuDescription(""); setNewMenuImage("/favicon.ico");
+  };
+
+  const handleDeleteMenu = async (menu: Menu) => {
+    if (!window.confirm(`Hapus menu “${menu.nama_menu}”?`)) return;
+    await dbService.deleteMenu(menu.id_menu);
+    setMenus((all) => all.filter((item) => item.id_menu !== menu.id_menu));
   };
 
   // Filters
@@ -367,7 +381,7 @@ export default function AdminDashboard() {
         <section className="bg-slate-900/60 border border-white/10 p-5 rounded-3xl">
           <h2 className="text-sm font-extrabold text-cyan-300">Menu: Foto, Katalog, Harga & Ketersediaan</h2>
           <form onSubmit={handleAddMenu} className="mt-3 grid gap-2 md:grid-cols-5"><input value={newMenuName} onChange={(e) => setNewMenuName(e.target.value)} placeholder="Nama menu baru" className="rounded-xl bg-slate-800 px-3 py-2 text-xs text-white" /><input value={newMenuPrice} onChange={(e) => setNewMenuPrice(e.target.value)} type="number" placeholder="Harga" className="rounded-xl bg-slate-800 px-3 py-2 text-xs text-white" /><input value={newMenuDescription} onChange={(e) => setNewMenuDescription(e.target.value)} placeholder="Keterangan menu" className="rounded-xl bg-slate-800 px-3 py-2 text-xs text-white" /><label className="cursor-pointer rounded-xl border border-dashed border-slate-600 px-3 py-2 text-center text-xs text-slate-300">Pilih gambar<input type="file" accept="image/*" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onload = () => setNewMenuImage(String(reader.result)); reader.readAsDataURL(file); } }} /></label><button className="rounded-xl bg-cyan-400 px-3 py-2 text-xs font-bold text-slate-950">Tambah Menu</button></form>
-          <div className="mt-4 grid gap-3 md:grid-cols-2">{menus.map((menu) => <div key={menu.id_menu} className="flex items-center gap-3 rounded-2xl bg-slate-950/50 p-3"><img src={menu.image || "/favicon.ico"} alt="" className="h-12 w-12 rounded-xl object-cover" /><div className="min-w-0 flex-1"><input value={menu.nama_menu} onChange={(e) => handleMenuUpdate(menu, { nama_menu: e.target.value })} className="w-full bg-transparent text-xs font-bold text-white outline-none" /><input type="number" value={menu.harga} onChange={(e) => handleMenuUpdate(menu, { harga: Number(e.target.value) })} className="mt-1 w-28 bg-slate-800 p-1 text-xs text-cyan-200" /></div><button onClick={() => handleMenuUpdate(menu, { stok_status: menu.stok_status === "tersedia" ? "habis" : "tersedia" })} className={`rounded-lg px-2 py-1 text-[10px] font-bold ${menu.stok_status === "tersedia" ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"}`}>{menu.stok_status === "tersedia" ? "Tersedia" : "Habis"}</button></div>)}</div>
+          <div className="mt-4 grid gap-3 md:grid-cols-2">{menus.map((menu) => <div key={menu.id_menu} className="flex items-center gap-3 rounded-2xl bg-slate-950/50 p-3"><img src={menu.image || "/favicon.ico"} alt="" className="h-12 w-12 rounded-xl object-cover" /><div className="min-w-0 flex-1"><input value={menu.nama_menu} onChange={(e) => handleMenuUpdate(menu, { nama_menu: e.target.value })} className="w-full bg-transparent text-xs font-bold text-white outline-none" /><input type="number" value={menu.harga} onChange={(e) => handleMenuUpdate(menu, { harga: Number(e.target.value) })} className="mt-1 w-28 bg-slate-800 p-1 text-xs text-cyan-200" /></div><button onClick={() => handleMenuUpdate(menu, { stok_status: menu.stok_status === "tersedia" ? "habis" : "tersedia" })} className={`rounded-lg px-2 py-1 text-[10px] font-bold ${menu.stok_status === "tersedia" ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"}`}>{menu.stok_status === "tersedia" ? "Tersedia" : "Habis"}</button><button onClick={() => handleDeleteMenu(menu)} aria-label={`Hapus ${menu.nama_menu}`} className="rounded-lg border border-rose-500/40 px-2 py-1 text-[10px] font-bold text-rose-300 hover:bg-rose-500 hover:text-white">Hapus</button></div>)}</div>
         </section>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

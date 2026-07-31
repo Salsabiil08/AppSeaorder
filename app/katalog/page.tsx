@@ -361,7 +361,6 @@ export default function KatalogPage() {
         <div className="relative z-10 max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xl font-bold text-white">Sea</span>
               <h1 className="text-3xl font-extrabold tracking-tight text-white">
                 SeaOrder
               </h1>

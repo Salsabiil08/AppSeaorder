@@ -291,6 +291,7 @@ export const dbService = {
         extension: extensionDetails
       });
       setMockData("seaorder_orders", localOrders);
+      await this.broadcastNewOrder(localOrders[0]);
 
       return orderId;
     } catch (err) {
@@ -312,6 +313,7 @@ export const dbService = {
       };
       localOrders.unshift(newOrder);
       setMockData("seaorder_orders", localOrders);
+      await this.broadcastNewOrder(newOrder);
 
       // Update local tables status
       if (opsiLayanan === "dinein" && extensionDetails.id_meja) {
@@ -611,6 +613,35 @@ export const dbService = {
     catch (err) { console.warn("dbService: Supabase addMenu failed, saving locally.", err); }
     setMockData("seaorder_menu", [...localMenus, newMenu]);
     return newMenu;
+  },
+
+  async deleteMenu(idMenu: number): Promise<boolean> {
+    try {
+      const { error } = await supabase.from("menu").delete().eq("id_menu", idMenu);
+      if (error) throw error;
+    } catch (err) { console.warn("dbService: Supabase deleteMenu failed, deleting locally.", err); }
+    const menus = getMockData<Menu[]>("seaorder_menu", LOCAL_FALLBACK_MENU).filter((menu) => menu.id_menu !== idMenu);
+    setMockData("seaorder_menu", menus);
+    return true;
+  },
+
+  async broadcastNewOrder(order: OrderDetail): Promise<void> {
+    try {
+      const channel = supabase.channel("admin-order-alerts");
+      await new Promise<void>((resolve) => {
+        const timeout = setTimeout(resolve, 1200);
+        channel.subscribe((status) => {
+          if (status === "SUBSCRIBED") { clearTimeout(timeout); resolve(); }
+        });
+      });
+      await channel.send({ type: "broadcast", event: "new-order", payload: order });
+      supabase.removeChannel(channel);
+    } catch (err) { console.warn("dbService: order broadcast failed.", err); }
+  },
+
+  listenToOrderAlerts(callback: (order: OrderDetail) => void): () => void {
+    const channel = supabase.channel("admin-order-alerts").on("broadcast", { event: "new-order" }, ({ payload }: { payload: OrderDetail }) => callback(payload)).subscribe();
+    return () => { supabase.removeChannel(channel); };
   },
 
   // 7. Update Meja Status
