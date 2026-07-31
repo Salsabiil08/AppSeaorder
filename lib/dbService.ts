@@ -1,4 +1,4 @@
-import { supabase } from "./supabaseClient";
+import { isSupabaseConfigured, supabase } from "./supabaseClient";
 
 export interface Menu {
   id_menu: number;
@@ -269,7 +269,9 @@ export const dbService = {
       };
 
       const { error: extError } = await supabase.from("ekstensi").insert(extData);
-      if (extError) throw extError;
+      // The order itself is already valid. Do not downgrade a cloud order to local-only
+      // data merely because optional extension columns have not been migrated yet.
+      if (extError) console.warn("dbService: extension save failed", extError);
 
       // Update table status if Dine-In
       if (opsiLayanan === "dinein" && extensionDetails.id_meja) {
@@ -296,6 +298,10 @@ export const dbService = {
       return orderId;
     } catch (err) {
       console.warn("dbService: Supabase createOrder failed, placing order locally.", err);
+
+      // With Supabase configured, localStorage would only exist on the customer's phone
+      // and can never be seen by the admin device. Surface the failure instead of claiming success.
+      if (isSupabaseConfigured) throw err;
 
       // Local storage fallback order placing
       const localOrders = getMockData<OrderDetail[]>("seaorder_orders", []);

@@ -202,7 +202,7 @@ export default function FormDetail() {
 
         {/* Operational Hours Alert */}
         {!isClientOpen && (opsi === "dinein" || (opsi === "takeaway" && takeawayTimeType === "sekarang") || opsi === "antar") && (
-          <div className="mb-6 p-4 rounded-2xl bg-amber-500/20 border border-amber-500/30 text-amber-200 text-xs leading-relaxed">
+          <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-300 text-amber-950 text-xs leading-relaxed">
             <strong>Info Warung:</strong> Saat ini di luar jam operasional (17.00 - 04.00 WIB). Pesanan Anda mungkin akan diproses saat warung buka.
           </div>
         )}

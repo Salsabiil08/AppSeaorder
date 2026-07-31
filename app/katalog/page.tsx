@@ -310,19 +310,18 @@ export default function KatalogPage() {
         extensionDetails
       );
 
-      // Bersihkan keranjang
-      setCart({});
-      sessionStorage.removeItem("seaorder_cart");
-      
-      // Redirect ke tracking
+      // Close the drawer first; retain the cart until navigation completes so totals never flash to zero.
+      setIsCartOpen(false);
       triggerToast("Pemesanan sukses! Mengalihkan...");
       setTimeout(() => {
+        setCart({});
+        sessionStorage.removeItem("seaorder_cart");
         router.push(`/tracking/${orderId}`);
       }, 1500);
 
     } catch (e) {
       console.error(e);
-      triggerToast("Ada kesalahan saat memproses pesanan.");
+      triggerToast("Pesanan belum tersimpan. Periksa koneksi lalu coba lagi.");
     } finally {
       setCheckoutLoading(false);
     }
@@ -539,7 +538,11 @@ export default function KatalogPage() {
       {totalItemsCount > 0 && (
         <div className="fixed bottom-6 left-4 right-4 md:max-w-xl md:mx-auto z-40 animate-slideUp">
           <button 
-            onClick={() => setIsCartOpen(true)}
+            onClick={() => {
+              const savedCart = sessionStorage.getItem("seaorder_cart");
+              if (savedCart) { try { setCart(JSON.parse(savedCart)); } catch (e) {} }
+              setIsCartOpen(true);
+            }}
             className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 px-6 py-4.5 rounded-2xl font-bold shadow-2xl flex items-center justify-between border border-cyan-200 hover:border-cyan-100 transition-all hover:scale-[1.01] active:scale-[0.99] group"
           >
             <div className="flex items-center gap-3">
