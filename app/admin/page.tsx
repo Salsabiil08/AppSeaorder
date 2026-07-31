@@ -31,6 +31,7 @@ export default function AdminDashboard() {
   // Stats
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [operationalInfo, setOperationalInfo] = useState({ isOpen: true, currentHourWib: 0 });
+  const [dbConnected, setDbConnected] = useState<boolean | null>(null);
 
   useEffect(() => {
     const session = getStaffSession();
@@ -40,6 +41,11 @@ export default function AdminDashboard() {
     }
 
     fetchInitialData();
+
+    // Check database connection
+    dbService.checkConnection().then((connected) => {
+      setDbConnected(connected);
+    });
 
     // Listen to operational status
     setOperationalInfo(checkOperationalStatus());
@@ -92,19 +98,11 @@ export default function AdminDashboard() {
   // Recalculate stats when orders update
   useEffect(() => {
     // Nilai pesanan hari ini; pembayaran tetap ditangani kasir secara manual.
-    if (typeof window !== "undefined") {
-      const allOrdersStr = localStorage.getItem("seaorder_orders");
-      if (allOrdersStr) {
-        try {
-          const allOrders = JSON.parse(allOrdersStr) as OrderDetail[];
-          const today = new Date().toDateString();
-          const completedSum = allOrders
-            .filter((o) => new Date(o.created_at).toDateString() === today)
-            .reduce((sum, o) => sum + o.total_bayar, 0);
-          setTotalEarnings(completedSum);
-        } catch (e) {}
-      }
-    }
+    const today = new Date().toDateString();
+    const completedSum = orders
+      .filter((o) => new Date(o.created_at).toDateString() === today)
+      .reduce((sum, o) => sum + o.total_bayar, 0);
+    setTotalEarnings(completedSum);
   }, [orders]);
 
   const fetchInitialData = async () => {
@@ -294,10 +292,10 @@ export default function AdminDashboard() {
             <span className="inline-block h-10 w-10 rounded-full bg-[#1db954]"></span>
             <h2 className="text-xl font-black text-cyan-300 tracking-tight">PESANAN BARU MASUK!</h2>
             <div className="bg-slate-950/60 p-4 rounded-2xl border border-white/5 text-xs text-left space-y-2">
-              <p><span className="text-slate-450">ID Pesanan:</span> <strong className="text-slate-100">#{newOrderAlert.id_pemesanan}</strong></p>
-              <p><span className="text-slate-450">Pelanggan:</span> <strong className="text-slate-100">{newOrderAlert.user_nama}</strong></p>
-              <p><span className="text-slate-450">Layanan:</span> <strong className="text-cyan-300">{getOpsiLabel(newOrderAlert.opsi_layanan)}</strong></p>
-              <p><span className="text-slate-450">Total Bayar:</span> <strong className="text-slate-150">Rp {newOrderAlert.total_bayar.toLocaleString("id-ID")}</strong></p>
+              <p><span className="text-slate-400">ID Pesanan:</span> <strong className="text-slate-100">#{newOrderAlert.id_pemesanan}</strong></p>
+              <p><span className="text-slate-400">Pelanggan:</span> <strong className="text-slate-100">{newOrderAlert.user_nama}</strong></p>
+              <p><span className="text-slate-400">Layanan:</span> <strong className="text-cyan-300">{getOpsiLabel(newOrderAlert.opsi_layanan)}</strong></p>
+              <p><span className="text-slate-400">Total Bayar:</span> <strong className="text-slate-200">Rp {newOrderAlert.total_bayar.toLocaleString("id-ID")}</strong></p>
             </div>
             <div className="flex gap-3">
               <button
@@ -329,15 +327,30 @@ export default function AdminDashboard() {
                 SeaOrder Admin Dashboard
               </h1>
             </div>
-            <p className="text-xs text-slate-450 mt-1">Warung Seafood & Lalapan "Lamongan Jaya Asli" - Portal Kasir & Owner</p>
+            <p className="text-xs text-slate-400 mt-1">Warung Seafood & Lalapan "Lamongan Jaya Asli" - Portal Kasir & Owner</p>
           </div>
 
-          {/* Operational Hours Indicator */}
-          <div className="flex items-center gap-3">
-            <span className={`h-2.5 w-2.5 rounded-full ${operationalInfo.isOpen ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`}></span>
-            <div className="text-xs">
-              <p className="font-bold text-slate-200">{operationalInfo.isOpen ? "Warung BUKA (Jam Operasional)" : "Warung TUTUP"}</p>
-              <p className="text-[10px] text-slate-450">Jam WIB Sekarang: {operationalInfo.currentHourWib.toString().padStart(2, "0")}.00 (Buka: 17.00 - 04.00)</p>
+          {/* Indicators Section */}
+          <div className="flex flex-wrap items-center gap-4">
+            {/* Database status banner */}
+            {dbConnected !== null && (
+              <div className={`px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-xs font-bold border transition-colors ${
+                dbConnected 
+                  ? "bg-emerald-500/10 border-emerald-500/35 text-emerald-400" 
+                  : "bg-rose-500/15 border-rose-500/35 text-rose-300"
+              }`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${dbConnected ? "bg-emerald-400 animate-pulse" : "bg-rose-500"}`}></span>
+                {dbConnected ? "Database: Terhubung" : "Database: Offline Mode"}
+              </div>
+            )}
+
+            {/* Operational Hours Indicator */}
+            <div className="flex items-center gap-3 bg-slate-950/40 border border-white/5 px-3 py-1.5 rounded-xl">
+              <span className={`h-2.5 w-2.5 rounded-full ${operationalInfo.isOpen ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`}></span>
+              <div className="text-xs">
+                <p className="font-bold text-slate-200">{operationalInfo.isOpen ? "Warung BUKA" : "Warung TUTUP"}</p>
+                <p className="text-[10px] text-slate-400">WIB: {operationalInfo.currentHourWib.toString().padStart(2, "0")}.00 (17.00 - 04.00)</p>
+              </div>
             </div>
           </div>
           <button onClick={downloadDailyReport} className="rounded-xl bg-cyan-400 px-4 py-2 text-xs font-extrabold text-slate-950 hover:bg-cyan-300">Unduh Laporan Harian (PDF)</button>
@@ -350,24 +363,24 @@ export default function AdminDashboard() {
         {/* Statistics Cards */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-slate-900/60 border border-white/10 p-5 rounded-3xl backdrop-blur-md">
-            <p className="text-xs font-bold text-slate-450 uppercase tracking-wider mb-1">Pendapatan Hari Ini</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Pendapatan Hari Ini</p>
             <h3 className="text-2xl font-black text-emerald-400">Rp {totalEarnings.toLocaleString("id-ID")}</h3>
             <p className="text-[10px] text-slate-500 mt-2">Total pesanan hari ini, tidak termasuk proses pembayaran.</p>
           </div>
 
           <div className="bg-slate-900/60 border border-white/10 p-5 rounded-3xl backdrop-blur-md">
-            <p className="text-xs font-bold text-slate-450 uppercase tracking-wider mb-1">Pesanan Hari Ini</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Pesanan Hari Ini</p>
             <h3 className="text-2xl font-black text-cyan-400">{todayOrders.length} Pesanan</h3>
             <p className="text-[10px] text-slate-500 mt-2">Daftar status pesanan yang telah dibuat hari ini.</p>
           </div>
 
           <div className="bg-slate-900/60 border border-white/10 p-5 rounded-3xl backdrop-blur-md">
-            <p className="text-xs font-bold text-slate-450 uppercase tracking-wider mb-1">Tamu Hari Ini</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Tamu Hari Ini</p>
             <h3 className="text-2xl font-black text-amber-400">{guestCount} Tamu</h3>
             <p className="text-[10px] text-slate-500 mt-2">{occupiedMejasCount} / {mejas.length} meja sedang terisi.</p>
           </div>
           <div className="bg-slate-900/60 border border-white/10 p-5 rounded-3xl backdrop-blur-md">
-            <p className="text-xs font-bold text-slate-450 uppercase tracking-wider mb-1">Rating Layanan</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Rating Layanan</p>
             <h3 className="text-2xl font-black text-yellow-400">{averageRating ? averageRating.toFixed(1) : "—"} ★</h3>
             <p className="text-[10px] text-slate-500 mt-2">Dari {ratedOrders.length} penilaian pelanggan.</p>
           </div>
@@ -381,7 +394,23 @@ export default function AdminDashboard() {
         <section className="bg-slate-900/60 border border-white/10 p-5 rounded-3xl">
           <h2 className="text-sm font-extrabold text-cyan-300">Menu: Foto, Katalog, Harga & Ketersediaan</h2>
           <form onSubmit={handleAddMenu} className="mt-3 grid gap-2 md:grid-cols-5"><input value={newMenuName} onChange={(e) => setNewMenuName(e.target.value)} placeholder="Nama menu baru" className="rounded-xl bg-slate-800 px-3 py-2 text-xs text-white" /><input value={newMenuPrice} onChange={(e) => setNewMenuPrice(e.target.value)} type="number" placeholder="Harga" className="rounded-xl bg-slate-800 px-3 py-2 text-xs text-white" /><input value={newMenuDescription} onChange={(e) => setNewMenuDescription(e.target.value)} placeholder="Keterangan menu" className="rounded-xl bg-slate-800 px-3 py-2 text-xs text-white" /><label className="cursor-pointer rounded-xl border border-dashed border-slate-600 px-3 py-2 text-center text-xs text-slate-300">Pilih gambar<input type="file" accept="image/*" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onload = () => setNewMenuImage(String(reader.result)); reader.readAsDataURL(file); } }} /></label><button className="rounded-xl bg-cyan-400 px-3 py-2 text-xs font-bold text-slate-950">Tambah Menu</button></form>
-          <div className="mt-4 grid gap-3 md:grid-cols-2">{menus.map((menu) => <div key={menu.id_menu} className="flex items-center gap-3 rounded-2xl bg-slate-950/50 p-3"><img src={menu.image || "/favicon.ico"} alt="" className="h-12 w-12 rounded-xl object-cover" /><div className="min-w-0 flex-1"><input value={menu.nama_menu} onChange={(e) => handleMenuUpdate(menu, { nama_menu: e.target.value })} className="w-full bg-transparent text-xs font-bold text-white outline-none" /><input type="number" value={menu.harga} onChange={(e) => handleMenuUpdate(menu, { harga: Number(e.target.value) })} className="mt-1 w-28 bg-slate-800 p-1 text-xs text-cyan-200" /></div><button onClick={() => handleMenuUpdate(menu, { stok_status: menu.stok_status === "tersedia" ? "habis" : "tersedia" })} className={`rounded-lg px-2 py-1 text-[10px] font-bold ${menu.stok_status === "tersedia" ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"}`}>{menu.stok_status === "tersedia" ? "Tersedia" : "Habis"}</button><button onClick={() => handleDeleteMenu(menu)} aria-label={`Hapus ${menu.nama_menu}`} className="rounded-lg border border-rose-500/40 px-2 py-1 text-[10px] font-bold text-rose-300 hover:bg-rose-500 hover:text-white">Hapus</button></div>)}</div>
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            {menus.map((menu) => (
+              <div key={menu.id_menu} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl bg-slate-950/50 p-4 border border-white/5">
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <img src={menu.image || "/favicon.ico"} alt="" className="h-12 w-12 rounded-xl object-cover shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <input value={menu.nama_menu} onChange={(e) => handleMenuUpdate(menu, { nama_menu: e.target.value })} className="w-full bg-transparent text-xs font-bold text-white outline-none focus:border-b focus:border-cyan-400" />
+                    <input type="number" value={menu.harga} onChange={(e) => handleMenuUpdate(menu, { harga: Number(e.target.value) })} className="mt-1 w-28 bg-slate-800 p-1 text-xs text-cyan-200 rounded" />
+                  </div>
+                </div>
+                <div className="flex items-center justify-end gap-2 w-full sm:w-auto border-t border-white/5 pt-2.5 sm:pt-0 sm:border-none">
+                  <button onClick={() => handleMenuUpdate(menu, { stok_status: menu.stok_status === "tersedia" ? "habis" : "tersedia" })} className={`rounded-lg px-2.5 py-1.5 text-[10px] font-bold cursor-pointer transition ${menu.stok_status === "tersedia" ? "bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30" : "bg-rose-500/20 text-rose-300 hover:bg-rose-500/30"}`}>{menu.stok_status === "tersedia" ? "Tersedia" : "Habis"}</button>
+                  <button onClick={() => handleDeleteMenu(menu)} aria-label={`Hapus ${menu.nama_menu}`} className="rounded-lg border border-rose-500/40 px-2.5 py-1.5 text-[10px] font-bold text-rose-300 hover:bg-rose-500 hover:text-white cursor-pointer transition">Hapus</button>
+                </div>
+              </div>
+            ))}
+          </div>
         </section>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -436,16 +465,16 @@ export default function AdminDashboard() {
                   >
                     <div onClick={() => setSelectedOrder(order)} className="space-y-1.5 cursor-pointer flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs bg-slate-955 border border-white/10 text-slate-400 px-2.5 py-0.5 rounded-lg font-mono">
+                        <span className="text-xs bg-slate-950 border border-white/10 text-slate-400 px-2.5 py-0.5 rounded-lg font-mono">
                           #{order.id_pemesanan}
                         </span>
                         <span className={`text-[10px] font-bold border px-2 py-0.5 rounded-md ${getStatusColor(order.status_order)}`}>
                           {order.status_order}
                         </span>
-                        <span className="text-xs font-bold text-slate-350">{getOpsiLabel(order.opsi_layanan)}</span>
+                        <span className="text-xs font-bold text-slate-300">{getOpsiLabel(order.opsi_layanan)}</span>
                       </div>
                       <h4 className="font-extrabold text-slate-100 group-hover:text-cyan-300 transition-colors">
-                        {order.user_nama} <span className="font-normal text-xs text-slate-450">({order.user_no_wa})</span>
+                        {order.user_nama} <span className="font-normal text-xs text-slate-400">({order.user_no_wa})</span>
                       </h4>
                       {order.items && order.items.length > 0 && (
                         <p className="text-xs text-slate-400 line-clamp-1 leading-relaxed">
@@ -457,7 +486,7 @@ export default function AdminDashboard() {
                     {/* Actions panel */}
                     <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
                       <div className="text-right text-xs mr-3 hidden md:block">
-                        <p className="text-slate-450">Total Tagihan</p>
+                        <p className="text-slate-400">Total Tagihan</p>
                         <p className="font-bold text-cyan-300 text-sm">Rp {order.total_bayar.toLocaleString("id-ID")}</p>
                       </div>
 
@@ -479,7 +508,7 @@ export default function AdminDashboard() {
             <div className="bg-slate-900/60 border border-white/10 p-5 rounded-3xl backdrop-blur-md">
               <div className="mb-4">
                 <h2 className="font-extrabold text-sm text-cyan-300">Manajemen Status Meja</h2>
-                <p className="text-[10px] text-slate-450 mt-1">Klik meja untuk mengganti status kosong/terisi secara instan.</p>
+                <p className="text-[10px] text-slate-400 mt-1">Klik meja untuk mengganti status kosong/terisi secara instan.</p>
               </div>
 
               {/* Meja Grid */}
@@ -530,9 +559,9 @@ export default function AdminDashboard() {
             <div className="space-y-2">
               <h4 className="text-[10px] font-bold text-cyan-300 uppercase tracking-wider">— Profil Pelanggan —</h4>
               <div className="text-xs space-y-1.5 bg-slate-950/40 p-3.5 rounded-xl border border-white/5">
-                <p><span className="text-slate-450">Nama:</span> <strong className="text-slate-200">{selectedOrder.user_nama}</strong></p>
+                <p><span className="text-slate-400">Nama:</span> <strong className="text-slate-200">{selectedOrder.user_nama}</strong></p>
                 <div className="flex justify-between items-center">
-                  <p><span className="text-slate-450">WhatsApp:</span> <strong className="text-slate-200">{selectedOrder.user_no_wa}</strong></p>
+                  <p><span className="text-slate-400">WhatsApp:</span> <strong className="text-slate-200">{selectedOrder.user_no_wa}</strong></p>
                   <a 
                     href={`https://wa.me/${selectedOrder.user_no_wa?.replace(/[^0-9]/g, "")}`}
                     target="_blank"
@@ -542,32 +571,32 @@ export default function AdminDashboard() {
                     Hubungi WhatsApp
                   </a>
                 </div>
-                <p><span className="text-slate-450">Waktu Order:</span> <strong className="text-slate-200">{new Date(selectedOrder.created_at).toLocaleString("id-ID")}</strong></p>
+                <p><span className="text-slate-400">Waktu Order:</span> <strong className="text-slate-200">{new Date(selectedOrder.created_at).toLocaleString("id-ID")}</strong></p>
               </div>
             </div>
 
             {/* Service details */}
             <div className="space-y-2">
               <h4 className="text-[10px] font-bold text-cyan-300 uppercase tracking-wider">— Detail Layanan ({getOpsiLabel(selectedOrder.opsi_layanan)}) —</h4>
-              <div className="text-xs bg-slate-955/40 p-3.5 rounded-xl border border-white/5 leading-relaxed">
+              <div className="text-xs bg-slate-950/40 p-3.5 rounded-xl border border-white/5 leading-relaxed">
                 {selectedOrder.opsi_layanan === "dinein" && (
-                  <p><span className="text-slate-450">Nomor Meja:</span> <strong className="text-slate-100">Meja {selectedOrder.extension?.id_meja}</strong></p>
+                  <p><span className="text-slate-400">Nomor Meja:</span> <strong className="text-slate-100">Meja {selectedOrder.extension?.id_meja}</strong></p>
                 )}
                 {selectedOrder.opsi_layanan === "takeaway" && (
-                  <p><span className="text-slate-450">Jadwal Ambil:</span> <strong className="text-slate-100">{selectedOrder.extension?.waktu_permintaan}</strong></p>
+                  <p><span className="text-slate-400">Jadwal Ambil:</span> <strong className="text-slate-100">{selectedOrder.extension?.waktu_permintaan}</strong></p>
                 )}
                 {selectedOrder.opsi_layanan === "antar" && (
                   <div>
-                    <p><span className="text-slate-450">Alamat Lengkap:</span></p>
+                    <p><span className="text-slate-400">Alamat Lengkap:</span></p>
                     <p className="font-semibold text-slate-200 mt-1">{selectedOrder.extension?.alamat}</p>
                   </div>
                 )}
                 {selectedOrder.opsi_layanan === "acara" && (
                   <div className="space-y-1">
-                    <p><span className="text-slate-450">Tanggal Acara:</span> <strong className="text-slate-100">{selectedOrder.extension?.tgl_acara}</strong></p>
-                    <p><span className="text-slate-450">Jam Acara:</span> <strong className="text-slate-100">{selectedOrder.extension?.waktu_permintaan}</strong></p>
-                    <p><span className="text-slate-450">Catatan/Alamat:</span></p>
-                    <p className="font-semibold text-slate-250 italic mt-0.5">"{selectedOrder.extension?.alamat}"</p>
+                    <p><span className="text-slate-400">Tanggal Acara:</span> <strong className="text-slate-100">{selectedOrder.extension?.tgl_acara}</strong></p>
+                    <p><span className="text-slate-400">Jam Acara:</span> <strong className="text-slate-100">{selectedOrder.extension?.waktu_permintaan}</strong></p>
+                    <p><span className="text-slate-400">Catatan/Alamat:</span></p>
+                    <p className="font-semibold text-slate-300 italic mt-0.5">"{selectedOrder.extension?.alamat}"</p>
                   </div>
                 )}
               </div>
@@ -585,7 +614,7 @@ export default function AdminDashboard() {
                           {item.nama_menu} <span className="text-cyan-400">x{item.quantity}</span>
                         </p>
                         {item.catatan && (
-                          <p className="text-[9px] text-slate-450 italic mt-0.5">Catatan: "{item.catatan}"</p>
+                          <p className="text-[9px] text-slate-400 italic mt-0.5">Catatan: "{item.catatan}"</p>
                         )}
                       </div>
                       <span className="text-xs font-semibold text-slate-300">
@@ -596,7 +625,7 @@ export default function AdminDashboard() {
                 ) : (
                   <p className="text-xs text-slate-500 italic">Tidak ada detail item yang disimpan.</p>
                 )}
-                <div className="flex justify-between items-center pt-3 font-extrabold text-sm text-cyan-350 border-t border-dashed border-white/5">
+                <div className="flex justify-between items-center pt-3 font-extrabold text-sm text-cyan-300 border-t border-dashed border-white/5">
                   <span>Total Pesanan</span>
                   <span>Rp {selectedOrder.total_bayar.toLocaleString("id-ID")}</span>
                 </div>
@@ -608,7 +637,7 @@ export default function AdminDashboard() {
             <div className="flex gap-3 pt-2">
               <button
                 onClick={() => setSelectedOrder(null)}
-                className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-350 text-xs font-bold py-2.5 rounded-xl transition-all"
+                className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold py-2.5 rounded-xl transition-all"
               >
                 Tutup
               </button>

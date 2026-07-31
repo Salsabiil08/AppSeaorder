@@ -202,11 +202,11 @@ export default function KitchenKDS() {
               Kitchen Display System (KDS)
             </h1>
           </div>
-          <p className="text-xs text-slate-450 mt-1">Dapur Warung Seafood & Lalapan Lamongan Jaya Asli</p>
+          <p className="text-xs text-slate-400 mt-1">Dapur Warung Seafood & Lalapan Lamongan Jaya Asli</p>
         </div>
 
         <div className="text-right text-xs bg-slate-950/60 border border-white/5 px-4 py-2 rounded-xl">
-          <p className="text-slate-450">Antrean Dapur Aktif</p>
+          <p className="text-slate-400">Antrean Dapur Aktif</p>
           <p className="text-sm font-black text-rose-400 mt-0.5">{orders.length} Tiket Hidangan</p>
         </div>
       </header>
@@ -215,7 +215,7 @@ export default function KitchenKDS() {
         <div className="flex items-center justify-between gap-3 mb-3">
           <div>
             <h2 className="font-extrabold text-sm text-cyan-300">Riwayat Pesanan Hari Ini</h2>
-            <p className="text-[10px] text-slate-450 mt-1">{todayHistory.length} pesanan tercatat hari ini.</p>
+            <p className="text-[10px] text-slate-400 mt-1">{todayHistory.length} pesanan tercatat hari ini.</p>
           </div>
           <span className="text-xs font-black text-emerald-300">{todayHistory.filter((o) => o.status_order === "Makanan Sudah Siap").length} makanan sudah siap</span>
         </div>
@@ -286,7 +286,7 @@ export default function KitchenKDS() {
 
                     {/* Order items detail */}
                     <div className="bg-slate-950/60 rounded-xl p-3.5 border border-white/5 space-y-2">
-                      <p className="text-[10px] font-bold text-slate-450 uppercase tracking-wider">Item Dipesan:</p>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Item Dipesan:</p>
                       <ul className="divide-y divide-white/5 text-xs font-bold space-y-2">
                         {order.items.map((item, idx) => (
                           <li key={idx} className="pt-2 first:pt-0 flex flex-col gap-0.5">
@@ -372,7 +372,7 @@ export default function KitchenKDS() {
 
                     {/* Order items detail */}
                     <div className="bg-slate-950/60 rounded-xl p-3.5 border border-white/5 space-y-2">
-                      <p className="text-[10px] font-bold text-slate-450 uppercase tracking-wider">Item Dipesan:</p>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Item Dipesan:</p>
                       <ul className="divide-y divide-white/5 text-xs font-bold space-y-2">
                         {order.items.map((item, idx) => (
                           <li key={idx} className="pt-2 first:pt-0 flex flex-col gap-0.5">

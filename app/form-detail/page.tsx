@@ -308,8 +308,8 @@ export default function FormDetail() {
                     onClick={() => setTakeawayTimeType("sekarang")}
                     className={`p-3 rounded-xl text-sm font-semibold border transition-all ${
                       takeawayTimeType === "sekarang"
-                        ? "bg-cyan-500 border-cyan-400 text-slate-900 shadow-lg shadow-cyan-500/20"
-                        : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
+                        ? "bg-[#002b5b] border-[#002b5b] text-white shadow-lg shadow-blue-500/10"
+                        : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
                     }`}
                   >
                     Sekarang (30m)
@@ -319,8 +319,8 @@ export default function FormDetail() {
                     onClick={() => setTakeawayTimeType("jam_tertentu")}
                     className={`p-3 rounded-xl text-sm font-semibold border transition-all ${
                       takeawayTimeType === "jam_tertentu"
-                        ? "bg-cyan-500 border-cyan-400 text-slate-900 shadow-lg shadow-cyan-500/20"
-                        : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
+                        ? "bg-[#002b5b] border-[#002b5b] text-white shadow-lg shadow-blue-500/10"
+                        : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
                     }`}
                   >
                     Jam Tertentu
@@ -334,7 +334,7 @@ export default function FormDetail() {
                   <input 
                     type="time" 
                     required 
-                    className="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm"
+                    className="w-full p-3 rounded-lg bg-white border border-slate-200 text-[#001e3c] focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#002b5b] text-sm"
                     value={takeawayTime}
                     onChange={(e) => setTakeawayTime(e.target.value)}
                   />
@@ -350,7 +350,7 @@ export default function FormDetail() {
                 <textarea 
                   placeholder="Tuliskan nama jalan, nomor rumah, RT/RW, kelurahan..."
                   required
-                  className="w-full p-3 h-20 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm resize-none"
+                  className="w-full p-3 h-20 rounded-lg bg-white border border-slate-200 text-[#001e3c] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#002b5b] text-sm resize-none"
                   value={alamat}
                   onChange={(e) => setAlamat(e.target.value)}
                 />
@@ -361,7 +361,7 @@ export default function FormDetail() {
                 <input 
                   type="text" 
                   placeholder="Contoh: Gang Dahlia 3 / Blok B4"
-                  className="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm"
+                  className="w-full p-3 rounded-lg bg-white border border-slate-200 text-[#001e3c] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#002b5b] text-sm"
                   value={gang}
                   onChange={(e) => setGang(e.target.value)}
                 />
@@ -372,7 +372,7 @@ export default function FormDetail() {
                 <input 
                   type="text" 
                   placeholder="Contoh: Depan Masjid Al-Ikhlas / Pagar Cat Hijau"
-                  className="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm"
+                  className="w-full p-3 rounded-lg bg-white border border-slate-200 text-[#001e3c] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#002b5b] text-sm"
                   value={patokan}
                   onChange={(e) => setPatokan(e.target.value)}
                 />

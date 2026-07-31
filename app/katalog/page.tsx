@@ -107,6 +107,7 @@ export default function KatalogPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [dbConnected, setDbConnected] = useState<boolean | null>(null);
 
   const router = useRouter();
 
@@ -146,6 +147,11 @@ export default function KatalogPage() {
           console.error("Gagal load keranjang", e);
         }
       }
+
+      // Check database connection
+      dbService.checkConnection().then((connected) => {
+        setDbConnected(connected);
+      });
 
       fetchMenu();
     }
@@ -367,7 +373,18 @@ export default function KatalogPage() {
             <p className="text-xs text-blue-100 font-medium">Warung Seafood & Lalapan "Lamongan Jaya Asli"</p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Database status banner */}
+            {dbConnected !== null && (
+              <div className={`px-3 py-2 rounded-lg flex items-center gap-1.5 text-xs font-bold border transition-colors ${
+                dbConnected 
+                  ? "bg-emerald-500/10 border-emerald-500/35 text-emerald-300" 
+                  : "bg-rose-500/15 border-rose-500/35 text-rose-300"
+              }`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${dbConnected ? "bg-emerald-400 animate-pulse" : "bg-rose-500"}`}></span>
+                {dbConnected ? "Cloud Aktif" : "Mode Lokal / Offline"}
+              </div>
+            )}
             {/* Service Chip */}
             <div className="bg-white/10 border border-white/20 px-4 py-2 rounded-lg flex items-center gap-2 text-xs font-semibold text-white">
               <span className="h-2 w-2 rounded-full bg-[#1db954]"></span> {opsiDetails}
@@ -458,11 +475,11 @@ export default function KatalogPage() {
               return (
                 <div 
                   key={item.id_menu}
-                  className="group rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[#002b5b] hover:shadow-md flex gap-4"
+                  className="group rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[#002b5b] hover:shadow-md flex flex-col sm:flex-row gap-4"
                 >
-                  <div className="w-2/5 shrink-0">
+                  <div className="w-full sm:w-2/5 shrink-0">
                     {/* Image Container */}
-                    <div className="relative h-full min-h-36 w-full overflow-hidden rounded-lg bg-slate-100 border border-slate-200">
+                    <div className="relative h-44 sm:h-full sm:min-h-36 w-full overflow-hidden rounded-lg bg-slate-100 border border-slate-200">
                       {/* Image element */}
                       <img 
                         src={item.image || "/favicon.ico"} 
@@ -594,7 +611,7 @@ export default function KatalogPage() {
                     </div>
 
                     {/* Quantity Selector */}
-                    <div className="flex items-center gap-2 bg-slate-905 border border-white/10 rounded-xl p-0.5">
+                    <div className="flex items-center gap-2 bg-slate-950 border border-white/10 rounded-xl p-0.5">
                       <button 
                         onClick={() => updateQuantity(item.id_menu, -1)}
                         className="w-6 h-6 rounded-lg bg-white/5 hover:bg-rose-500/20 hover:text-rose-300 text-slate-400 font-bold text-xs flex items-center justify-center transition-colors"
@@ -618,7 +635,7 @@ export default function KatalogPage() {
                     <input
                       type="text"
                       placeholder="Catatan porsi (contoh: pedas manis, ga pake kol)"
-                      className="w-full bg-slate-900/60 border border-white/5 rounded-xl px-3 py-1.5 text-xs text-slate-300 placeholder-slate-650 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                      className="w-full bg-slate-900/60 border border-white/5 rounded-xl px-3 py-1.5 text-xs text-slate-300 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-cyan-500"
                       value={catatan}
                       onChange={(e) => updateCatatan(item.id_menu, e.target.value)}
                     />

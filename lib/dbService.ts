@@ -773,15 +773,31 @@ export const dbService = {
     };
 
     if (typeof window !== "undefined") {
-      window.addEventListener("storage", handleStorageChange);
-    }
-
-    return () => {
-      isCancelled = true;
-      supabase.removeChannel(channel);
-      if (typeof window !== "undefined") {
-        window.removeEventListener("storage", handleStorageChange);
+        window.addEventListener("storage", handleStorageChange);
       }
-    };
-  }
-};
+
+      return () => {
+        isCancelled = true;
+        supabase.removeChannel(channel);
+        if (typeof window !== "undefined") {
+          window.removeEventListener("storage", handleStorageChange);
+        }
+      };
+    },
+
+    // 10. Check if Supabase connection is working
+    async checkConnection(): Promise<boolean> {
+      if (!isSupabaseConfigured) return false;
+      try {
+        const { error } = await supabase
+          .from("meja")
+          .select("id_meja")
+          .limit(1);
+        if (error) return false;
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+  };
+

@@ -118,7 +118,7 @@ export default function TrackingPage({ params }: PageProps) {
       <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-6 text-center">
         <p className="text-sm font-bold text-slate-500 mb-4">Pesanan tidak ditemukan</p>
         <h2 className="text-lg font-bold mb-2">Pesanan Tidak Ditemukan</h2>
-        <p className="text-sm text-slate-450 mb-6">{error || "Detail pesanan tidak tersedia."}</p>
+        <p className="text-sm text-slate-400 mb-6">{error || "Detail pesanan tidak tersedia."}</p>
         <button 
           onClick={() => router.push("/")}
           className="bg-cyan-500 text-slate-950 px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-cyan-400 transition-colors"
@@ -154,7 +154,7 @@ export default function TrackingPage({ params }: PageProps) {
 
         {/* Realtime Status Bar / Progress */}
         <div className="mb-10 bg-slate-950/40 p-6 rounded-3xl border border-white/5">
-          <h2 className="text-xs font-bold text-slate-450 uppercase tracking-widest text-center mb-6">— Status Hidangan —</h2>
+          <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest text-center mb-6">— Status Hidangan —</h2>
           
           <div className="relative flex justify-between items-center mb-4">
             {/* Horizontal Line background */}
@@ -184,7 +184,7 @@ export default function TrackingPage({ params }: PageProps) {
                   </div>
                   <span 
                     className={`text-[10px] font-bold mt-2.5 uppercase tracking-wide transition-colors duration-300 ${
-                      isCurrent ? "text-cyan-300" : isActive ? "text-slate-300" : "text-slate-550"
+                      isCurrent ? "text-cyan-300" : isActive ? "text-slate-300" : "text-slate-500"
                     }`}
                   >
                     {status}
@@ -213,11 +213,11 @@ export default function TrackingPage({ params }: PageProps) {
             <h3 className="text-xs font-bold text-cyan-300 uppercase tracking-wider">Detail Pengiriman/Layanan</h3>
             <div className="text-xs space-y-2">
               <div>
-                <span className="text-slate-450">Jenis Layanan:</span>
+                <span className="text-slate-400">Jenis Layanan:</span>
                 <p className="font-bold text-slate-200 mt-0.5">{getOpsiLabel(order.opsi_layanan)}</p>
               </div>
               <div>
-                <span className="text-slate-450">Waktu Order:</span>
+                <span className="text-slate-400">Waktu Order:</span>
                 <p className="font-semibold text-slate-200 mt-0.5">
                   {new Date(order.created_at).toLocaleString("id-ID", {
                     hour: "2-digit",
@@ -235,13 +235,13 @@ export default function TrackingPage({ params }: PageProps) {
             <h3 className="text-xs font-bold text-cyan-300 uppercase tracking-wider">Informasi Pemesan</h3>
             <div className="text-xs space-y-2">
               <div>
-                <span className="text-slate-450">Nama Lengkap:</span>
+                <span className="text-slate-400">Nama Lengkap:</span>
                 <p className="font-bold text-slate-200 mt-0.5">
                   {sessionStorage.getItem("user_nama") || "Pelanggan"}
                 </p>
               </div>
               <div>
-                <span className="text-slate-450">Nomor WhatsApp:</span>
+                <span className="text-slate-400">Nomor WhatsApp:</span>
                 <p className="font-semibold text-slate-200 mt-0.5">
                   {sessionStorage.getItem("user_wa") || "-"}
                 </p>
@@ -262,10 +262,10 @@ export default function TrackingPage({ params }: PageProps) {
                       {item.nama_menu} <span className="text-cyan-400">x{item.quantity}</span>
                     </span>
                     {item.catatan && (
-                      <p className="text-[10px] text-slate-450 italic mt-0.5">Catatan: "{item.catatan}"</p>
+                      <p className="text-[10px] text-slate-400 italic mt-0.5">Catatan: "{item.catatan}"</p>
                     )}
                   </div>
-                  <span className="text-xs font-bold text-slate-350">
+                  <span className="text-xs font-bold text-slate-300">
                     Rp {(item.harga * item.quantity).toLocaleString("id-ID")}
                   </span>
                 </div>
