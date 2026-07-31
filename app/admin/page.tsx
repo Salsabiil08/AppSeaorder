@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { dbService, OrderDetail, Meja, checkOperationalStatus } from "@/lib/dbService";
+import { dbService, OrderDetail, Meja, Menu, checkOperationalStatus } from "@/lib/dbService";
 import { getStaffSession } from "@/lib/staffAuth";
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [orders, setOrders] = useState<OrderDetail[]>([]);
   const [mejas, setMejas] = useState<Meja[]>([]);
+  const [menus, setMenus] = useState<Menu[]>([]);
+  const [newMenuName, setNewMenuName] = useState("");
+  const [newMenuPrice, setNewMenuPrice] = useState("");
   const [loading, setLoading] = useState(true);
 
   // Filters
@@ -88,6 +91,7 @@ export default function AdminDashboard() {
       setOrders(orderHistory);
       const mejaList = await dbService.getMejaList();
       setMejas(mejaList);
+      setMenus(await dbService.getMenuList());
     } catch (e) {
       console.error("Error fetching initial admin data", e);
     } finally {
@@ -170,6 +174,20 @@ export default function AdminDashboard() {
     refreshMejasOnly();
   };
 
+  const handleMenuUpdate = async (menu: Menu, changes: Partial<Menu>) => {
+    const updated = { ...menu, ...changes };
+    await dbService.updateMenu(updated);
+    setMenus((all) => all.map((item) => item.id_menu === updated.id_menu ? updated : item));
+  };
+
+  const downloadDailyReport = () => window.print();
+  const handleAddMenu = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMenuName.trim() || !Number(newMenuPrice)) return;
+    const added = await dbService.addMenu({ nama_menu: newMenuName.trim(), harga: Number(newMenuPrice), kategori: "Makanan", stok_status: "tersedia", image: "/favicon.ico" });
+    setMenus((all) => [...all, added]); setNewMenuName(""); setNewMenuPrice("");
+  };
+
   // Filters
   const filteredOrders = orders.filter((o) => {
     const matchStatus = statusFilter === "Semua" || o.status_order === statusFilter;
@@ -211,6 +229,16 @@ export default function AdminDashboard() {
   }
 
   const occupiedMejasCount = mejas.filter((m) => m.status_meja === "terisi").length;
+  const todayOrders = orders.filter((o) => new Date(o.created_at).toDateString() === new Date().toDateString());
+  const guestCount = todayOrders.reduce((sum, o) => sum + (o.opsi_layanan === "dinein" ? 1 : 1), 0);
+  const ratedOrders = orders.filter((o) => o.rating);
+  const averageRating = ratedOrders.length ? ratedOrders.reduce((sum, o) => sum + (o.rating || 0), 0) / ratedOrders.length : 0;
+  const dailyTrend = Array.from({ length: 7 }, (_, index) => {
+    const day = new Date(); day.setDate(day.getDate() - (6 - index));
+    const total = orders.filter((o) => new Date(o.created_at).toDateString() === day.toDateString()).reduce((sum, o) => sum + o.total_bayar, 0);
+    return { label: day.toLocaleDateString("id-ID", { weekday: "short" }), total };
+  });
+  const maxTrend = Math.max(...dailyTrend.map((d) => d.total), 1);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans pb-16">
@@ -282,6 +310,7 @@ export default function AdminDashboard() {
               <p className="text-[10px] text-slate-450">Jam WIB Sekarang: {operationalInfo.currentHourWib.toString().padStart(2, "0")}.00 (Buka: 17.00 - 04.00)</p>
             </div>
           </div>
+          <button onClick={downloadDailyReport} className="rounded-xl bg-cyan-400 px-4 py-2 text-xs font-extrabold text-slate-950 hover:bg-cyan-300">Unduh Laporan Harian (PDF)</button>
         </div>
       </header>
 
@@ -289,26 +318,40 @@ export default function AdminDashboard() {
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         
         {/* Statistics Cards */}
-        <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-slate-900/60 border border-white/10 p-5 rounded-3xl backdrop-blur-md">
-            <p className="text-xs font-bold text-slate-450 uppercase tracking-wider mb-1">Nilai Pesanan Hari Ini</p>
+            <p className="text-xs font-bold text-slate-450 uppercase tracking-wider mb-1">Pendapatan Hari Ini</p>
             <h3 className="text-2xl font-black text-emerald-400">Rp {totalEarnings.toLocaleString("id-ID")}</h3>
             <p className="text-[10px] text-slate-500 mt-2">Total pesanan hari ini, tidak termasuk proses pembayaran.</p>
           </div>
 
           <div className="bg-slate-900/60 border border-white/10 p-5 rounded-3xl backdrop-blur-md">
-            <p className="text-xs font-bold text-slate-450 uppercase tracking-wider mb-1">Riwayat Pesanan Hari Ini</p>
-            <h3 className="text-2xl font-black text-cyan-400">{orders.length} Pesanan</h3>
+            <p className="text-xs font-bold text-slate-450 uppercase tracking-wider mb-1">Pesanan Hari Ini</p>
+            <h3 className="text-2xl font-black text-cyan-400">{todayOrders.length} Pesanan</h3>
             <p className="text-[10px] text-slate-500 mt-2">Daftar status pesanan yang telah dibuat hari ini.</p>
           </div>
 
           <div className="bg-slate-900/60 border border-white/10 p-5 rounded-3xl backdrop-blur-md">
-            <p className="text-xs font-bold text-slate-450 uppercase tracking-wider mb-1">Okupansi Meja Makan</p>
-            <h3 className="text-2xl font-black text-amber-400">
-              {occupiedMejasCount} / {mejas.length} Meja
-            </h3>
-            <p className="text-[10px] text-slate-500 mt-2">Rasio Meja Terisi: {Math.round((occupiedMejasCount / (mejas.length || 1)) * 100)}%</p>
+            <p className="text-xs font-bold text-slate-450 uppercase tracking-wider mb-1">Tamu Hari Ini</p>
+            <h3 className="text-2xl font-black text-amber-400">{guestCount} Tamu</h3>
+            <p className="text-[10px] text-slate-500 mt-2">{occupiedMejasCount} / {mejas.length} meja sedang terisi.</p>
           </div>
+          <div className="bg-slate-900/60 border border-white/10 p-5 rounded-3xl backdrop-blur-md">
+            <p className="text-xs font-bold text-slate-450 uppercase tracking-wider mb-1">Rating Layanan</p>
+            <h3 className="text-2xl font-black text-yellow-400">{averageRating ? averageRating.toFixed(1) : "—"} ★</h3>
+            <p className="text-[10px] text-slate-500 mt-2">Dari {ratedOrders.length} penilaian pelanggan.</p>
+          </div>
+        </section>
+
+        <section className="bg-slate-900/60 border border-white/10 p-5 rounded-3xl">
+          <h2 className="text-sm font-extrabold text-cyan-300">Tren Pendapatan Harian</h2>
+          <div className="mt-5 flex h-36 items-end gap-3">{dailyTrend.map((day) => <div key={day.label} className="flex flex-1 flex-col items-center gap-2"><span className="text-[10px] text-emerald-300">{day.total ? `${Math.round(day.total / 1000)}k` : ""}</span><div className="w-full rounded-t-lg bg-cyan-500/80" style={{ height: `${Math.max((day.total / maxTrend) * 100, day.total ? 8 : 2)}%` }}></div><span className="text-[10px] text-slate-400">{day.label}</span></div>)}</div>
+        </section>
+
+        <section className="bg-slate-900/60 border border-white/10 p-5 rounded-3xl">
+          <h2 className="text-sm font-extrabold text-cyan-300">Menu: Foto, Katalog, Harga & Ketersediaan</h2>
+          <form onSubmit={handleAddMenu} className="mt-3 flex flex-wrap gap-2"><input value={newMenuName} onChange={(e) => setNewMenuName(e.target.value)} placeholder="Nama menu baru" className="rounded-xl bg-slate-800 px-3 py-2 text-xs text-white" /><input value={newMenuPrice} onChange={(e) => setNewMenuPrice(e.target.value)} type="number" placeholder="Harga" className="w-28 rounded-xl bg-slate-800 px-3 py-2 text-xs text-white" /><button className="rounded-xl bg-cyan-400 px-3 py-2 text-xs font-bold text-slate-950">+ Tambah Menu</button></form>
+          <div className="mt-4 grid gap-3 md:grid-cols-2">{menus.map((menu) => <div key={menu.id_menu} className="flex items-center gap-3 rounded-2xl bg-slate-950/50 p-3"><img src={menu.image || "/favicon.ico"} alt="" className="h-12 w-12 rounded-xl object-cover" /><div className="min-w-0 flex-1"><input value={menu.nama_menu} onChange={(e) => handleMenuUpdate(menu, { nama_menu: e.target.value })} className="w-full bg-transparent text-xs font-bold text-white outline-none" /><input type="number" value={menu.harga} onChange={(e) => handleMenuUpdate(menu, { harga: Number(e.target.value) })} className="mt-1 w-28 bg-slate-800 p-1 text-xs text-cyan-200" /></div><button onClick={() => handleMenuUpdate(menu, { stok_status: menu.stok_status === "tersedia" ? "habis" : "tersedia" })} className={`rounded-lg px-2 py-1 text-[10px] font-bold ${menu.stok_status === "tersedia" ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"}`}>{menu.stok_status === "tersedia" ? "Tersedia" : "Habis"}</button></div>)}</div>
         </section>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

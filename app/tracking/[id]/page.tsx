@@ -275,14 +275,36 @@ export default function TrackingPage({ params }: PageProps) {
                 <span>Rp {order.total_bayar.toLocaleString("id-ID")}</span>
               </div>
               <p className="pt-3 text-xs font-semibold text-amber-300">
-                Pembayaran dilakukan langsung di kasir.
+                {order.opsi_layanan === "antar" ? "Pembayaran dilakukan kepada driver saat pesanan tiba." : "Pembayaran dilakukan langsung di kasir."}
               </p>
             </div>
           </div>
+        )}
+
+        {isFoodReady && (
+          <RatingForm order={order} onSaved={(rating, comment) => setOrder({ ...order, rating, rating_comment: comment })} />
         )}
 
         
       </div>
     </div>
   );
+}
+
+function RatingForm({ order, onSaved }: { order: OrderDetail; onSaved: (rating: number, comment: string) => void }) {
+  const [rating, setRating] = useState(order.rating || 0);
+  const [comment, setComment] = useState(order.rating_comment || "");
+  const [saved, setSaved] = useState(Boolean(order.rating));
+  const save = async () => {
+    if (!rating) return;
+    await dbService.submitRating(order.id_pemesanan, rating, comment);
+    setSaved(true); onSaved(rating, comment);
+  };
+  return <section className="rounded-2xl border border-cyan-400/20 bg-cyan-400/5 p-5 text-center">
+    <h3 className="text-sm font-black text-cyan-200">Bagaimana layanan kami?</h3>
+    <p className="mt-1 text-xs text-slate-400">Rating Anda membantu kami meningkatkan pelayanan.</p>
+    <div className="mt-3 flex justify-center gap-2">{[1,2,3,4,5].map((star) => <button key={star} onClick={() => !saved && setRating(star)} disabled={saved} className={`text-3xl ${star <= rating ? "text-amber-400" : "text-slate-600"}`}>★</button>)}</div>
+    {!saved ? <><textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Saran untuk kami (opsional)" className="mt-3 w-full rounded-xl border border-white/10 bg-slate-950/50 p-3 text-xs text-white" />
+      <button onClick={save} disabled={!rating} className="mt-3 rounded-xl bg-cyan-400 px-4 py-2 text-xs font-bold text-slate-950 disabled:opacity-50">Kirim Rating</button></> : <p className="mt-3 text-xs font-bold text-emerald-300">Terima kasih atas rating Anda!</p>}
+  </section>;
 }

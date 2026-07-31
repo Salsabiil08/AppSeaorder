@@ -38,6 +38,8 @@ export interface OrderDetail {
   }[];
   user_nama?: string;
   user_no_wa?: string;
+  rating?: number;
+  rating_comment?: string;
   extension?: {
     alamat?: string;
     waktu_permintaan?: string;
@@ -113,14 +115,16 @@ const LOCAL_FALLBACK_MENU: Menu[] = [
 ];
 
 const LOCAL_FALLBACK_MEJA: Meja[] = [
-  { id_meja: 1, nomor_meja: "Meja 1", status_meja: "kosong", kapasitas: 4 },
-  { id_meja: 2, nomor_meja: "Meja 2", status_meja: "kosong", kapasitas: 4 },
-  { id_meja: 3, nomor_meja: "Meja 3", status_meja: "kosong", kapasitas: 4 },
-  { id_meja: 4, nomor_meja: "Meja 4", status_meja: "kosong", kapasitas: 4 },
-  { id_meja: 5, nomor_meja: "Meja 5", status_meja: "kosong", kapasitas: 4 },
+  { id_meja: 1, nomor_meja: "Meja 1", status_meja: "kosong", kapasitas: 8 },
+  { id_meja: 2, nomor_meja: "Meja 2", status_meja: "kosong", kapasitas: 8 },
+  { id_meja: 3, nomor_meja: "Meja 3", status_meja: "kosong", kapasitas: 8 },
+  { id_meja: 4, nomor_meja: "Meja 4", status_meja: "kosong", kapasitas: 8 },
+  { id_meja: 5, nomor_meja: "Meja 5", status_meja: "kosong", kapasitas: 8 },
   { id_meja: 6, nomor_meja: "Meja 6", status_meja: "kosong", kapasitas: 4 },
   { id_meja: 7, nomor_meja: "Meja 7", status_meja: "kosong", kapasitas: 4 },
-  { id_meja: 8, nomor_meja: "Meja 8", status_meja: "kosong", kapasitas: 4 }
+  { id_meja: 8, nomor_meja: "Meja 8", status_meja: "kosong", kapasitas: 4 },
+  { id_meja: 9, nomor_meja: "Meja Luar 1", status_meja: "kosong", kapasitas: 4 },
+  { id_meja: 10, nomor_meja: "Meja Luar 2", status_meja: "kosong", kapasitas: 6 }
 ];
 
 // Helper to determine operational status
@@ -168,7 +172,10 @@ export const dbService = {
         .select("*")
         .order("id_meja", { ascending: true });
       if (error) throw error;
-      return data || [];
+      const existing = data || [];
+      // Older databases may not yet contain the two outdoor tables. Keep them visible in the ordering UI.
+      return [...existing, ...LOCAL_FALLBACK_MEJA.filter((fallback) => !existing.some((m) => m.id_meja === fallback.id_meja))]
+        .map((m) => ({ ...m, kapasitas: m.id_meja <= 5 ? 8 : m.id_meja === 10 ? 6 : 4 }));
     } catch (err) {
       console.warn("dbService: Supabase getMejaList failed, using local storage.", err);
       return getMockData<Meja[]>("seaorder_meja", LOCAL_FALLBACK_MEJA);
@@ -568,6 +575,42 @@ export const dbService = {
 
       return true;
     }
+  },
+
+  async submitRating(id: string, rating: number, comment: string): Promise<boolean> {
+    const saved = { rating, rating_comment: comment };
+    try {
+      // This is optional until the rating columns are added in Supabase; local data remains functional.
+      await supabase.from("pemesanan").update(saved).eq("id_pemesanan", id);
+    } catch (err) {
+      console.warn("dbService: Supabase submitRating failed, saving locally.", err);
+    }
+    const orders = getMockData<OrderDetail[]>("seaorder_orders", []).map((o) => o.id_pemesanan === id ? { ...o, ...saved } : o);
+    setMockData("seaorder_orders", orders);
+    const sessionMock = sessionStorage.getItem(`mock_order_${id}`);
+    if (sessionMock) {
+      try { sessionStorage.setItem(`mock_order_${id}`, JSON.stringify({ ...JSON.parse(sessionMock), ...saved })); } catch (e) {}
+    }
+    return true;
+  },
+
+  async updateMenu(menu: Menu): Promise<boolean> {
+    try {
+      const { error } = await supabase.from("menu").update({ nama_menu: menu.nama_menu, harga: menu.harga, kategori: menu.kategori, stok_status: menu.stok_status }).eq("id_menu", menu.id_menu);
+      if (error) throw error;
+    } catch (err) { console.warn("dbService: Supabase updateMenu failed, saving locally.", err); }
+    const menus = getMockData<Menu[]>("seaorder_menu", LOCAL_FALLBACK_MENU).map((m) => m.id_menu === menu.id_menu ? menu : m);
+    setMockData("seaorder_menu", menus);
+    return true;
+  },
+
+  async addMenu(menu: Omit<Menu, "id_menu">): Promise<Menu> {
+    const localMenus = getMockData<Menu[]>("seaorder_menu", LOCAL_FALLBACK_MENU);
+    const newMenu = { ...menu, id_menu: Math.max(0, ...localMenus.map((m) => m.id_menu)) + 1 };
+    try { await supabase.from("menu").insert({ nama_menu: newMenu.nama_menu, harga: newMenu.harga, kategori: newMenu.kategori, stok_status: newMenu.stok_status }); }
+    catch (err) { console.warn("dbService: Supabase addMenu failed, saving locally.", err); }
+    setMockData("seaorder_menu", [...localMenus, newMenu]);
+    return newMenu;
   },
 
   // 7. Update Meja Status

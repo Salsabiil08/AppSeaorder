@@ -19,6 +19,8 @@ export default function FormDetail() {
   const [jumlahTamu, setJumlahTamu] = useState("1");
   const [loadingMeja, setLoadingMeja] = useState(false);
 
+  const getKapasitasMeja = (meja: Meja) => meja.id_meja <= 5 ? 8 : meja.id_meja === 10 ? 6 : 4;
+
   const [takeawayTimeType, setTakeawayTimeType] = useState("sekarang");
   const [takeawayTime, setTakeawayTime] = useState("");
 
@@ -105,12 +107,12 @@ export default function FormDetail() {
         return;
       }
       
-      // Minimal H-6
+      // Minimal H-1
       const selectedDateTime = new Date(`${tglAcara}T${waktuAcara}`);
-      const minDateTime = new Date(Date.now() + 6 * 24 * 60 * 60 * 1000); // 6 days from now
+      const minDateTime = new Date(Date.now() + 24 * 60 * 60 * 1000);
       
       if (selectedDateTime < minDateTime) {
-        setErrorMsg("Booking untuk Acara Besar wajib dilakukan minimal H-6 sebelum hari-H.");
+        setErrorMsg("Booking untuk Acara Besar wajib dilakukan minimal H-1 sebelum hari-H.");
         return;
       }
 
@@ -125,8 +127,10 @@ export default function FormDetail() {
         return;
       }
       const tamuNum = parseInt(jumlahTamu, 10);
-      if (isNaN(tamuNum) || tamuNum < 1 || tamuNum > 4) {
-        setErrorMsg("Jumlah tamu makan di tempat maksimal 4 orang per meja.");
+      const meja = mejaList.find((m) => String(m.id_meja) === selectedMeja);
+      const kapasitas = meja ? getKapasitasMeja(meja) : 4;
+      if (isNaN(tamuNum) || tamuNum < 1 || tamuNum > kapasitas) {
+        setErrorMsg(`Jumlah tamu untuk ${meja?.nomor_meja || "meja ini"} maksimal ${kapasitas} orang.`);
         return;
       }
 
@@ -220,7 +224,7 @@ export default function FormDetail() {
           {opsi === "acara" && (
             <>
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-cyan-300 uppercase tracking-wider">Tanggal Acara (Min. H-6)</label>
+                <label className="text-xs font-semibold text-cyan-300 uppercase tracking-wider">Tanggal Acara (Min. H-1)</label>
                 <input 
                   type="date" 
                   required 
@@ -229,6 +233,9 @@ export default function FormDetail() {
                   onChange={(e) => setTglAcara(e.target.value)}
                 />
               </div>
+              <a href="https://wa.me/6281246178877" target="_blank" rel="noreferrer" className="block text-center text-xs font-bold text-emerald-300 hover:text-emerald-200">
+                Butuh bantuan reservasi? Hubungi WhatsApp 0812-4617-8877
+              </a>
 
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-semibold text-cyan-300 uppercase tracking-wider">Waktu Acara</label>
@@ -269,7 +276,7 @@ export default function FormDetail() {
                     <option value="">-- Pilih Meja Kosong --</option>
                     {mejaList.map((m) => (
                       <option key={m.id_meja} value={m.id_meja}>
-                        {m.nomor_meja} (Status: {m.status_meja})
+                        {m.nomor_meja} — kapasitas {getKapasitasMeja(m)} orang ({m.status_meja})
                       </option>
                     ))}
                   </select>
@@ -277,11 +284,11 @@ export default function FormDetail() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-cyan-300 uppercase tracking-wider">Jumlah Tamu (Maks. 4)</label>
+                <label className="text-xs font-semibold text-cyan-300 uppercase tracking-wider">Jumlah Tamu (sesuai kapasitas meja)</label>
                 <input 
                   type="number" 
                   min="1" 
-                  max="4" 
+                  max={selectedMeja ? String(getKapasitasMeja(mejaList.find((m) => String(m.id_meja) === selectedMeja) || { id_meja: 0, nomor_meja: "", status_meja: "", kapasitas: 4 })) : "8"}
                   required 
                   className="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm"
                   value={jumlahTamu}

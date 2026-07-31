@@ -641,6 +641,12 @@ export default function KatalogPage() {
                 </div>
               </div>
 
+              {selectedOpsi === "antar" && (
+                <p className="rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs font-semibold text-amber-200">
+                  Pembayaran dilakukan kepada driver saat pesanan tiba.
+                </p>
+              )}
+
               {/* Submit Button */}
               <button
                 onClick={handleCheckout}
