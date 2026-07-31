@@ -156,7 +156,7 @@ export default function TrackingPage({ params }: PageProps) {
         <div className="mb-10 bg-slate-950/40 p-6 rounded-3xl border border-white/5">
           <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest text-center mb-6">— Status Hidangan —</h2>
           
-          <div className="relative flex justify-between items-center mb-4">
+          <div className="relative mb-4 flex items-start justify-between">
             {/* Horizontal Line background */}
             <div className="absolute top-1/2 left-[8%] right-[8%] h-1 bg-white/10 -translate-y-1/2 z-0 rounded-full"></div>
             {/* Active progress line */}
@@ -170,7 +170,7 @@ export default function TrackingPage({ params }: PageProps) {
               const isActive = index <= currentStatusIndex;
               const isCurrent = index === currentStatusIndex;
               return (
-                <div key={status} className="relative z-10 flex flex-col items-center">
+                <div key={status} className="relative z-10 flex w-1/3 flex-col items-center">
                   <div 
                     className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-lg border transition-all duration-300 ${
                       isCurrent 
@@ -183,7 +183,7 @@ export default function TrackingPage({ params }: PageProps) {
                     {getStatusIcon(status)}
                   </div>
                   <span 
-                    className={`text-[10px] font-bold mt-2.5 uppercase tracking-wide transition-colors duration-300 ${
+                    className={`mt-2.5 w-full px-1 text-center text-[8px] font-bold uppercase leading-tight tracking-normal transition-colors duration-300 sm:text-[10px] sm:tracking-wide ${
                       isCurrent ? "text-cyan-300" : isActive ? "text-slate-300" : "text-slate-500"
                     }`}
                   >

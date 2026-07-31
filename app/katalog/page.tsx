@@ -107,7 +107,6 @@ export default function KatalogPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [dbConnected, setDbConnected] = useState<boolean | null>(null);
 
   const router = useRouter();
 
@@ -147,11 +146,6 @@ export default function KatalogPage() {
           console.error("Gagal load keranjang", e);
         }
       }
-
-      // Check database connection
-      dbService.checkConnection().then((connected) => {
-        setDbConnected(connected);
-      });
 
       fetchMenu();
     }
@@ -356,8 +350,9 @@ export default function KatalogPage() {
       
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-lg bg-[#002b5b] text-white font-bold shadow-lg flex items-center gap-2 animate-bounce">
-          <span className="inline-block h-2 w-2 rounded-full bg-[#1db954]"></span> {toastMessage}
+        <div className="pointer-events-none fixed bottom-28 left-4 right-4 z-30 mx-auto flex max-w-sm items-center justify-center gap-2 rounded-xl bg-[#002b5b] px-4 py-3 text-center text-sm font-bold text-white shadow-xl animate-slideUp">
+          <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-[#1db954]"></span>
+          <span>{toastMessage}</span>
         </div>
       )}
 
@@ -374,17 +369,6 @@ export default function KatalogPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            {/* Database status banner */}
-            {dbConnected !== null && (
-              <div className={`px-3 py-2 rounded-lg flex items-center gap-1.5 text-xs font-bold border transition-colors ${
-                dbConnected 
-                  ? "bg-emerald-500/10 border-emerald-500/35 text-emerald-300" 
-                  : "bg-rose-500/15 border-rose-500/35 text-rose-300"
-              }`}>
-                <span className={`h-1.5 w-1.5 rounded-full ${dbConnected ? "bg-emerald-400 animate-pulse" : "bg-rose-500"}`}></span>
-                {dbConnected ? "Cloud Aktif" : "Mode Lokal / Offline"}
-              </div>
-            )}
             {/* Service Chip */}
             <div className="bg-white/10 border border-white/20 px-4 py-2 rounded-lg flex items-center gap-2 text-xs font-semibold text-white">
               <span className="h-2 w-2 rounded-full bg-[#1db954]"></span> {opsiDetails}
@@ -510,14 +494,14 @@ export default function KatalogPage() {
                       <h3 className="font-bold text-[#001e3c] mb-1 text-base">{item.nama_menu}</h3>
                       <p className="text-xs text-slate-500 line-clamp-3 leading-relaxed">{item.deskripsi}</p>
                     </div>
-                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-200">
-                    <span className="text-[#002b5b] font-extrabold text-base">
+                  <div className="mt-4 flex items-center justify-between gap-3 border-t border-slate-200 pt-3">
+                    <span className="whitespace-nowrap text-base font-extrabold text-[#002b5b]">
                       Rp {item.harga.toLocaleString("id-ID")}
                     </span>
 
                     {item.stok_status === "tersedia" ? (
                       qty > 0 ? (
-                        <div className="flex items-center gap-2.5 bg-cyan-500 text-slate-950 rounded-xl p-1 shadow-md">
+                        <div className="flex shrink-0 items-center gap-2.5 rounded-xl bg-cyan-500 p-1 text-slate-950 shadow-md">
                           <button 
                             onClick={() => updateQuantity(item.id_menu, -1)}
                             className="w-7 h-7 rounded-lg hover:bg-cyan-400 font-bold text-sm flex items-center justify-center transition-colors active:scale-90"
@@ -535,7 +519,7 @@ export default function KatalogPage() {
                       ) : (
                         <button 
                           onClick={() => addToCart(item)}
-                          className="border border-[#002b5b] text-[#002b5b] hover:bg-[#002b5b] hover:text-white px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 active:scale-95"
+                          className="shrink-0 rounded-lg border border-[#002b5b] px-4 py-2 text-xs font-bold text-[#002b5b] transition-all duration-200 hover:bg-[#002b5b] hover:text-white active:scale-95"
                         >
                           + Tambah
                         </button>
@@ -560,18 +544,15 @@ export default function KatalogPage() {
               if (savedCart) { try { setCart(JSON.parse(savedCart)); } catch (e) {} }
               setIsCartOpen(true);
             }}
-            className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 px-6 py-4.5 rounded-2xl font-bold shadow-2xl flex items-center justify-between border border-cyan-200 hover:border-cyan-100 transition-all hover:scale-[1.01] active:scale-[0.99] group"
+            className="grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-cyan-200 bg-gradient-to-r from-cyan-400 to-blue-500 px-3 py-3 text-slate-950 shadow-2xl transition-all hover:scale-[1.01] hover:border-cyan-100 hover:from-cyan-300 hover:to-blue-400 active:scale-[0.99] sm:px-6 sm:py-4 group"
           >
-            <div className="flex items-center gap-3">
-              <span className="bg-slate-950 text-cyan-300 text-xs font-extrabold px-3 py-1 rounded-xl shadow-inner group-hover:scale-105 transition-transform">
+            <span className="whitespace-nowrap rounded-xl bg-slate-950 px-3 py-1 text-xs font-extrabold text-cyan-300 shadow-inner transition-transform group-hover:scale-105">
                 {totalItemsCount} Porsi
-              </span>
-              <span className="text-sm font-semibold">Lihat Keranjang Belanja</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs opacity-75">Total:</span>
-              <span className="text-base font-extrabold">Rp {grandTotal.toLocaleString("id-ID")}</span>
-              <CartIcon />
+            </span>
+            <span className="min-w-0 text-center text-sm font-bold leading-tight sm:text-base">Lihat Keranjang</span>
+            <div className="whitespace-nowrap text-right leading-tight">
+              <span className="block text-[10px] font-semibold opacity-80">Total</span>
+              <span className="block text-base font-extrabold">Rp {grandTotal.toLocaleString("id-ID")}</span>
             </div>
           </button>
         </div>

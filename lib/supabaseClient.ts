@@ -1,7 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Supabase's current dashboard calls this a publishable key; older projects
+// still expose it as an anon key. Both are valid client-side API keys.
+const supabaseAnonKey =
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 // The app can run with its local-storage fallback when Supabase credentials
 // are intentionally absent (for example, preview deployments).

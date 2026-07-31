@@ -31,7 +31,6 @@ export default function AdminDashboard() {
   // Stats
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [operationalInfo, setOperationalInfo] = useState({ isOpen: true, currentHourWib: 0 });
-  const [dbConnected, setDbConnected] = useState<boolean | null>(null);
 
   useEffect(() => {
     const session = getStaffSession();
@@ -41,11 +40,6 @@ export default function AdminDashboard() {
     }
 
     fetchInitialData();
-
-    // Check database connection
-    dbService.checkConnection().then((connected) => {
-      setDbConnected(connected);
-    });
 
     // Listen to operational status
     setOperationalInfo(checkOperationalStatus());
@@ -332,18 +326,6 @@ export default function AdminDashboard() {
 
           {/* Indicators Section */}
           <div className="flex flex-wrap items-center gap-4">
-            {/* Database status banner */}
-            {dbConnected !== null && (
-              <div className={`px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-xs font-bold border transition-colors ${
-                dbConnected 
-                  ? "bg-emerald-500/10 border-emerald-500/35 text-emerald-400" 
-                  : "bg-rose-500/15 border-rose-500/35 text-rose-300"
-              }`}>
-                <span className={`h-1.5 w-1.5 rounded-full ${dbConnected ? "bg-emerald-400 animate-pulse" : "bg-rose-500"}`}></span>
-                {dbConnected ? "Database: Terhubung" : "Database: Offline Mode"}
-              </div>
-            )}
-
             {/* Operational Hours Indicator */}
             <div className="flex items-center gap-3 bg-slate-950/40 border border-white/5 px-3 py-1.5 rounded-xl">
               <span className={`h-2.5 w-2.5 rounded-full ${operationalInfo.isOpen ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`}></span>
