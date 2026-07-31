@@ -345,18 +345,17 @@ export default function KatalogPage() {
   if (loading) return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">Memuat hidangan laut spesial untukmu...</div>;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans pb-24 selection:bg-cyan-500 selection:text-slate-900">
+    <div className="min-h-screen bg-[#f7f9fb] text-[#001e3c] font-sans pb-24 selection:bg-blue-100">
       
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl bg-cyan-500 text-slate-950 font-bold shadow-xl border border-cyan-300 flex items-center gap-2 animate-bounce">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-lg bg-[#002b5b] text-white font-bold shadow-lg flex items-center gap-2 animate-bounce">
           <span>✨</span> {toastMessage}
         </div>
       )}
 
       {/* Hero Header */}
-      <header className="relative bg-gradient-to-br from-blue-950 via-slate-900 to-cyan-900 py-10 px-6 rounded-b-[2.5rem] border-b border-white/10 shadow-2xl overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-500/10 via-transparent to-transparent"></div>
+      <header className="relative bg-[#002b5b] py-7 px-6 border-b border-blue-950 shadow-sm overflow-hidden">
         <div className="relative z-10 max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">

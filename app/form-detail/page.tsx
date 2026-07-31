@@ -181,21 +181,21 @@ export default function FormDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 text-white flex items-center justify-center p-4 md:p-8 font-sans">
-      <div className="max-w-md w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-300">
+    <div className="min-h-screen bg-[#f7f9fb] text-[#001e3c] flex items-center justify-center p-4 md:p-8 font-sans">
+      <div className="max-w-md w-full bg-white border border-slate-200 rounded-xl p-6 md:p-8 shadow-sm transition-all duration-300">
         
         {/* Header */}
         <div className="flex items-center gap-3.5 mb-6">
           <button 
             onClick={handleBack}
-            className="p-2.5 rounded-2xl bg-blue-500/10 border border-blue-500/30 hover:border-cyan-400/50 text-cyan-400 hover:text-cyan-300 hover:bg-blue-500/20 transition-all active:scale-95 flex items-center justify-center shadow-lg shadow-blue-500/5"
+            className="p-2.5 rounded-lg bg-blue-50 border border-blue-100 text-[#002b5b] hover:bg-blue-100 transition-all active:scale-95 flex items-center justify-center"
             aria-label="Kembali"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
             </svg>
           </button>
-          <h1 className="text-xl md:text-2xl font-bold tracking-tight bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-200">
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight text-[#002b5b]">
             {getOpsiTitle()}
           </h1>
         </div>
@@ -207,7 +207,7 @@ export default function FormDetail() {
           </div>
         )}
 
-        <p className="text-sm text-slate-300 mb-6">
+        <p className="text-sm text-slate-500 mb-6">
           Hai <strong>{nama}</strong>, silakan lengkapi formulir di bawah ini untuk melanjutkan ke katalog menu.
         </p>
 
@@ -228,7 +228,7 @@ export default function FormDetail() {
                 <input 
                   type="date" 
                   required 
-                  className="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm"
+                  className="w-full p-3 rounded-lg bg-white border border-slate-200 text-[#001e3c] focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#002b5b] text-sm"
                   value={tglAcara}
                   onChange={(e) => setTglAcara(e.target.value)}
                 />
@@ -242,7 +242,7 @@ export default function FormDetail() {
                 <input 
                   type="time" 
                   required 
-                  className="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm"
+                  className="w-full p-3 rounded-lg bg-white border border-slate-200 text-[#001e3c] focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#002b5b] text-sm"
                   value={waktuAcara}
                   onChange={(e) => setWaktuAcara(e.target.value)}
                 />
@@ -252,7 +252,7 @@ export default function FormDetail() {
                 <label className="text-xs font-semibold text-cyan-300 uppercase tracking-wider">Catatan Acara (Opsional)</label>
                 <textarea 
                   placeholder="Contoh: Bukber Keluarga Besar, butuh meja panjang, dll."
-                  className="w-full p-3 h-24 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm resize-none"
+                  className="w-full p-3 h-24 rounded-lg bg-white border border-slate-200 text-[#001e3c] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#002b5b] text-sm resize-none"
                   value={catatanAcara}
                   onChange={(e) => setCatatanAcara(e.target.value)}
                 />
@@ -269,7 +269,7 @@ export default function FormDetail() {
                 ) : (
                   <select 
                     required 
-                    className="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm"
+                    className="w-full p-3 rounded-lg bg-white border border-slate-200 text-[#001e3c] focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#002b5b] text-sm"
                     value={selectedMeja}
                     onChange={(e) => setSelectedMeja(e.target.value)}
                   >
@@ -290,7 +290,7 @@ export default function FormDetail() {
                   min="1" 
                   max={selectedMeja ? String(getKapasitasMeja(mejaList.find((m) => String(m.id_meja) === selectedMeja) || { id_meja: 0, nomor_meja: "", status_meja: "", kapasitas: 4 })) : "8"}
                   required 
-                  className="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm"
+                  className="w-full p-3 rounded-lg bg-white border border-slate-200 text-[#001e3c] focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#002b5b] text-sm"
                   value={jumlahTamu}
                   onChange={(e) => setJumlahTamu(e.target.value)}
                 />
@@ -383,7 +383,7 @@ export default function FormDetail() {
           {/* Button Submit */}
           <button 
             type="submit" 
-            className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-900 hover:text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-cyan-500/20 active:scale-[0.98] mt-6"
+            className="w-full bg-[#002b5b] hover:bg-[#001e3c] text-white font-bold py-3.5 rounded-lg transition-all shadow-sm active:scale-[0.98] mt-6"
           >
             Lanjutkan ke Katalog Menu →
           </button>

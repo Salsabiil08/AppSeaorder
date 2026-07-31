@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { dbService, OrderDetail, Meja, Menu, checkOperationalStatus } from "@/lib/dbService";
 import { getStaffSession } from "@/lib/staffAuth";
@@ -24,6 +24,7 @@ export default function AdminDashboard() {
   // Audio system state
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [newOrderAlert, setNewOrderAlert] = useState<OrderDetail | null>(null);
+  const knownOrderIds = useRef<Set<string>>(new Set());
 
   // Stats
   const [totalEarnings, setTotalEarnings] = useState(0);
@@ -59,8 +60,20 @@ export default function AdminDashboard() {
       refreshMejasOnly();
     });
 
+    // Fallback for devices where realtime websocket events are delayed/blocked.
+    const polling = setInterval(async () => {
+      const latest = await dbService.getOrderHistory();
+      const newOrders = latest.filter((order) => !knownOrderIds.current.has(order.id_pemesanan));
+      if (newOrders.length) {
+        newOrders.forEach((order) => knownOrderIds.current.add(order.id_pemesanan));
+        triggerNewOrderAlarm(newOrders[0]);
+      }
+      setOrders(latest);
+    }, 5000);
+
     return () => {
       clearInterval(interval);
+      clearInterval(polling);
       unsubscribeNew();
       unsubscribeUpdates();
     };
@@ -89,6 +102,7 @@ export default function AdminDashboard() {
     try {
       const orderHistory = await dbService.getOrderHistory();
       setOrders(orderHistory);
+      knownOrderIds.current = new Set(orderHistory.map((order) => order.id_pemesanan));
       const mejaList = await dbService.getMejaList();
       setMejas(mejaList);
       setMenus(await dbService.getMenuList());
@@ -103,6 +117,7 @@ export default function AdminDashboard() {
     try {
       const orderHistory = await dbService.getOrderHistory();
       setOrders(orderHistory);
+      orderHistory.forEach((order) => knownOrderIds.current.add(order.id_pemesanan));
     } catch (e) {}
   };
 
