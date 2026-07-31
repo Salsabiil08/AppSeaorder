@@ -84,9 +84,9 @@ export default function TrackingPage({ params }: PageProps) {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "Menunggu": return "📥";
-      case "Sedang Dimasak": return "🍳";
-      case "Makanan Sudah Siap": return "🍽️";
-      default: return "🔔";
+      case "Sedang Dimasak": return "…";
+      case "Makanan Sudah Siap": return "✓";
+      default: return "•";
     }
   };
 
@@ -101,10 +101,10 @@ export default function TrackingPage({ params }: PageProps) {
 
   const getOpsiLabel = (opsi: string) => {
     switch (opsi) {
-      case "acara": return "📅 Acara Besar";
-      case "dinein": return "🍽️ Makan di Tempat (Dine-In)";
-      case "takeaway": return "🛍️ Bawa Pulang (Take-Away)";
-      case "antar": return "🛵 Pesan Antar (Delivery)";
+      case "acara": return "Acara Besar";
+      case "dinein": return "Makan di Tempat (Dine-In)";
+      case "takeaway": return "Bawa Pulang (Take-Away)";
+      case "antar": return "Pesan Antar (Delivery)";
       default: return opsi;
     }
   };
@@ -116,7 +116,7 @@ export default function TrackingPage({ params }: PageProps) {
   if (error || !order) {
     return (
       <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-6 text-center">
-        <p className="text-4xl mb-4">🔍</p>
+        <p className="text-sm font-bold text-slate-500 mb-4">Pesanan tidak ditemukan</p>
         <h2 className="text-lg font-bold mb-2">Pesanan Tidak Ditemukan</h2>
         <p className="text-sm text-slate-450 mb-6">{error || "Detail pesanan tidak tersedia."}</p>
         <button 
@@ -133,7 +133,7 @@ export default function TrackingPage({ params }: PageProps) {
   const isFoodReady = ["Makanan Sudah Siap", "Siap Disajikan", "Siap"].includes(order.status_order);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 md:p-8 flex flex-col items-center justify-center">
+    <div className="oceanic-shell min-h-screen bg-slate-950 text-slate-100 font-sans p-4 md:p-8 flex flex-col items-center justify-center">
       <div className="max-w-2xl w-full bg-slate-900/60 border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl backdrop-blur-md">
         
         {/* Header */}

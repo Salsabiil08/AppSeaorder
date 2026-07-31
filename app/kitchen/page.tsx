@@ -155,10 +155,10 @@ export default function KitchenKDS() {
 
   const getOpsiLabel = (opsi: string) => {
     switch (opsi) {
-      case "acara": return "📅 Acara";
-      case "dinein": return "🍽️ Dine-in";
-      case "takeaway": return "🛍️ Take-Away";
-      case "antar": return "🛵 Delivery";
+      case "acara": return "Acara";
+      case "dinein": return "Dine-in";
+      case "takeaway": return "Take-Away";
+      case "antar": return "Delivery";
       default: return opsi;
     }
   };
@@ -175,12 +175,12 @@ export default function KitchenKDS() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-6 space-y-6">
+    <div className="oceanic-shell min-h-screen bg-slate-950 text-slate-100 font-sans p-6 space-y-6">
 
       {/* Sound System Activator */}
       {!audioEnabled && (
         <div className="bg-gradient-to-r from-rose-600 to-red-500 text-slate-950 px-4 py-3 font-extrabold text-xs text-center flex items-center justify-center gap-3 shadow-lg rounded-2xl">
-          🔊 Chef, harap aktifkan speaker untuk mendengarkan alarm pesanan baru di dapur!
+          Aktifkan notifikasi suara untuk pesanan baru di dapur.
           <button
             onClick={() => {
               setAudioEnabled(true);
@@ -197,7 +197,7 @@ export default function KitchenKDS() {
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/60 border border-white/10 rounded-2xl p-5 backdrop-blur-md">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-3xl">🍳</span>
+            <span className="text-xl font-bold text-[#002b5b]">KDS</span>
             <h1 className="text-2xl font-black bg-clip-text bg-gradient-to-r from-rose-400 via-orange-300 to-amber-200">
               Kitchen Display System (KDS)
             </h1>
@@ -247,7 +247,7 @@ export default function KitchenKDS() {
           <div className="space-y-4 max-h-[72vh] overflow-y-auto pr-1 scrollbar-thin">
             {incomingOrders.length === 0 ? (
               <div className="bg-slate-900/10 border border-white/5 border-dashed p-16 text-center rounded-2xl">
-                <span className="text-4xl text-slate-700">🥘</span>
+                <span className="text-sm font-bold text-slate-500">Tidak ada antrean</span>
                 <p className="text-xs text-slate-500 mt-3">Tidak ada antrean masakan baru.</p>
               </div>
             ) : (
@@ -296,7 +296,7 @@ export default function KitchenKDS() {
                             </div>
                             {item.catatan && (
                               <p className="text-[10px] text-amber-300 italic font-semibold ml-3 bg-amber-500/5 p-1.5 rounded border border-amber-500/10">
-                                🍳 Catatan: "{item.catatan}"
+                                Catatan: "{item.catatan}"
                               </p>
                             )}
                           </li>
@@ -309,7 +309,7 @@ export default function KitchenKDS() {
                       onClick={() => handleMulaiMasak(order.id_pemesanan)}
                       className="w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold py-3.5 rounded-xl text-xs transition-all shadow-md active:scale-[0.98] cursor-pointer"
                     >
-                      🍳 MULAI MASAK
+                      MULAI MASAK
                     </button>
                   </div>
                 );
@@ -333,7 +333,7 @@ export default function KitchenKDS() {
           <div className="space-y-4 max-h-[72vh] overflow-y-auto pr-1 scrollbar-thin">
             {cookingOrders.length === 0 ? (
               <div className="bg-slate-900/10 border border-white/5 border-dashed p-16 text-center rounded-2xl">
-                <span className="text-4xl text-slate-700">🔪</span>
+                <span className="text-sm font-bold text-slate-500">Belum ada pesanan diproses</span>
                 <p className="text-xs text-slate-500 mt-3">Tidak ada hidangan yang sedang dimasak saat ini.</p>
               </div>
             ) : (
@@ -382,7 +382,7 @@ export default function KitchenKDS() {
                             </div>
                             {item.catatan && (
                               <p className="text-[10px] text-amber-300 italic font-semibold ml-3 bg-amber-500/5 p-1.5 rounded border border-amber-500/10">
-                                🍳 Catatan: "{item.catatan}"
+                                Catatan: "{item.catatan}"
                               </p>
                             )}
                           </li>
@@ -395,7 +395,7 @@ export default function KitchenKDS() {
                       onClick={() => handleSiapSaji(order.id_pemesanan)}
                       className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3.5 rounded-xl text-xs transition-all shadow-md active:scale-[0.98] cursor-pointer"
                     >
-                      🍽️ MAKANAN SUDAH SIAP
+                      MAKANAN SUDAH SIAP
                     </button>
                   </div>
                 );

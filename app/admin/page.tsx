@@ -212,10 +212,10 @@ export default function AdminDashboard() {
 
   const getOpsiLabel = (opsi: string) => {
     switch (opsi) {
-      case "acara": return "📅 Acara";
-      case "dinein": return "🍽️ Dine-In";
-      case "takeaway": return "🛍️ Take-Away";
-      case "antar": return "🛵 Delivery";
+      case "acara": return "Acara";
+      case "dinein": return "Dine-In";
+      case "takeaway": return "Take-Away";
+      case "antar": return "Delivery";
       default: return opsi;
     }
   };
@@ -256,12 +256,12 @@ export default function AdminDashboard() {
   const maxTrend = Math.max(...dailyTrend.map((d) => d.total), 1);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans pb-16">
+    <div className="oceanic-shell min-h-screen bg-slate-950 text-slate-100 font-sans pb-16">
       
       {/* Sound System Activator */}
       {!audioEnabled && (
         <div className="bg-gradient-to-r from-amber-600 to-orange-500 text-slate-950 px-4 py-3 font-extrabold text-xs text-center flex items-center justify-center gap-3 shadow-lg">
-          🔔 Browser membutuhkan izin untuk memainkan alarm pesanan baru.
+          Notifikasi browser perlu diaktifkan agar alarm pesanan baru dapat diputar.
           <button 
             onClick={enableAudio} 
             className="bg-slate-950 text-cyan-400 hover:bg-slate-900 transition-colors px-4 py-1.5 rounded-lg text-[10px] uppercase tracking-wider"
@@ -275,7 +275,7 @@ export default function AdminDashboard() {
       {newOrderAlert && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
           <div className="max-w-md w-full bg-slate-900 border-2 border-cyan-400 rounded-3xl p-6 shadow-2xl text-center space-y-4 animate-bounce">
-            <span className="text-5xl animate-pulse inline-block">🛎️</span>
+            <span className="inline-block h-10 w-10 rounded-full bg-[#1db954]"></span>
             <h2 className="text-xl font-black text-cyan-300 tracking-tight">PESANAN BARU MASUK!</h2>
             <div className="bg-slate-950/60 p-4 rounded-2xl border border-white/5 text-xs text-left space-y-2">
               <p><span className="text-slate-450">ID Pesanan:</span> <strong className="text-slate-100">#{newOrderAlert.id_pemesanan}</strong></p>
@@ -309,7 +309,7 @@ export default function AdminDashboard() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-3xl">🔑</span>
+              <span className="text-3xl text-[#002b5b]">Admin</span>
               <h1 className="text-2xl font-black bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-200">
                 SeaOrder Admin Dashboard
               </h1>
@@ -409,7 +409,7 @@ export default function AdminDashboard() {
             {/* Orders list items */}
             {filteredOrders.length === 0 ? (
               <div className="bg-slate-900/20 border border-white/5 p-12 text-center rounded-3xl">
-                <span className="text-4xl">📭</span>
+                <span className="text-sm font-bold text-slate-500">Tidak ada pesanan</span>
                 <p className="text-sm font-semibold text-slate-400 mt-3">Tidak ada antrean pesanan aktif yang cocok.</p>
               </div>
             ) : (
@@ -477,7 +477,7 @@ export default function AdminDashboard() {
                       m.status_meja
                     )}`}
                   >
-                    <span className="text-2xl">{m.status_meja === "kosong" ? "🟢" : "🔴"}</span>
+                    <span className={`h-3 w-3 rounded-full ${m.status_meja === "kosong" ? "bg-[#1db954]" : "bg-rose-500"}`}></span>
                     <strong className="text-sm font-extrabold text-slate-100">{m.nomor_meja}</strong>
                     <span className="text-[9px] uppercase tracking-wider font-semibold opacity-75">
                       {m.status_meja === "kosong" ? "Kosong" : "Terisi"}
@@ -499,7 +499,7 @@ export default function AdminDashboard() {
             <div className="flex justify-between items-start border-b border-white/5 pb-3">
               <div>
                 <h3 className="font-black text-lg text-slate-100 flex items-center gap-2">
-                  <span>📄</span> Detail Tagihan Order
+                  Detail Tagihan Order
                 </h3>
                 <p className="text-[10px] text-slate-400">ID: #{selectedOrder.id_pemesanan}</p>
               </div>
@@ -524,7 +524,7 @@ export default function AdminDashboard() {
                     rel="noopener noreferrer"
                     className="text-[10px] bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-2 py-1 rounded font-bold shadow-md"
                   >
-                    💬 Hubungi WhatsApp
+                    Hubungi WhatsApp
                   </a>
                 </div>
                 <p><span className="text-slate-450">Waktu Order:</span> <strong className="text-slate-200">{new Date(selectedOrder.created_at).toLocaleString("id-ID")}</strong></p>

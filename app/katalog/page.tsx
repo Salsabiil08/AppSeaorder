@@ -345,12 +345,12 @@ export default function KatalogPage() {
   if (loading) return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">Memuat hidangan laut spesial untukmu...</div>;
 
   return (
-    <div className="min-h-screen bg-[#f7f9fb] text-[#001e3c] font-sans pb-24 selection:bg-blue-100">
+    <div className="oceanic-shell min-h-screen bg-[#f7f9fb] text-[#001e3c] font-sans pb-24 selection:bg-blue-100">
       
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-lg bg-[#002b5b] text-white font-bold shadow-lg flex items-center gap-2 animate-bounce">
-          <span>✨</span> {toastMessage}
+          <span className="inline-block h-2 w-2 rounded-full bg-[#1db954]"></span> {toastMessage}
         </div>
       )}
 
@@ -359,7 +359,7 @@ export default function KatalogPage() {
         <div className="relative z-10 max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-2xl">🌊</span>
+              <span className="text-xl font-bold">Sea</span>
               <h1 className="text-3xl font-extrabold tracking-tight bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-200 to-white">
                 SeaOrder
               </h1>
@@ -370,7 +370,7 @@ export default function KatalogPage() {
           <div className="flex items-center gap-3">
             {/* Service Chip */}
             <div className="bg-white/10 border border-white/20 backdrop-blur-md px-4 py-2 rounded-2xl flex items-center gap-2 text-xs font-semibold text-cyan-300 shadow-inner">
-              <span className="animate-pulse">🟢</span> {opsiDetails}
+              <span className="h-2 w-2 rounded-full bg-[#1db954]"></span> {opsiDetails}
             </div>
             {/* Ubah Layanan button */}
             <button 
@@ -425,7 +425,7 @@ export default function KatalogPage() {
 
           {/* Search bar */}
           <div className="relative">
-            <span className="absolute inset-y-0 left-4 flex items-center text-slate-400 pointer-events-none">🔍</span>
+            <span className="absolute inset-y-0 left-4 flex items-center text-slate-400 pointer-events-none"><SearchIcon /></span>
             <input
               type="text"
               placeholder="Cari hidangan favoritmu..."
@@ -447,7 +447,7 @@ export default function KatalogPage() {
         {/* Menu Grid */}
         {filteredMenu.length === 0 ? (
           <div className="text-center py-20 bg-slate-900/20 border border-white/5 rounded-3xl">
-            <p className="text-4xl mb-4">🍽️</p>
+            <p className="text-sm font-bold text-[#002b5b] mb-4">Tidak ada menu</p>
             <h3 className="font-bold text-slate-300 mb-1">Menu tidak ditemukan</h3>
             <p className="text-xs text-slate-500">Coba kata kunci lain atau pilih kategori yang berbeda.</p>
           </div>
@@ -553,7 +553,7 @@ export default function KatalogPage() {
             <div className="flex items-center gap-1.5">
               <span className="text-xs opacity-75">Total:</span>
               <span className="text-base font-extrabold">Rp {grandTotal.toLocaleString("id-ID")}</span>
-              <span className="text-base group-hover:translate-x-1 transition-transform">🛒</span>
+              <CartIcon />
             </div>
           </button>
         </div>
@@ -568,7 +568,7 @@ export default function KatalogPage() {
             <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-4">
               <div>
                 <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-                  <span>🛒</span> Detail Pesanan
+                  <CartIcon /> Detail Pesanan
                 </h2>
                 <p className="text-[10px] text-slate-400">{opsiDetails}</p>
               </div>
@@ -661,7 +661,7 @@ export default function KatalogPage() {
                     Memproses Pesanan...
                   </>
                 ) : (
-                  <>Konfirmasi Pemesanan & Kirim 🚀</>
+                  <>Konfirmasi Pemesanan</>
                 )}
               </button>
             </div>
@@ -671,3 +671,8 @@ export default function KatalogPage() {
     </div>
   );
 }
+
+function CartIcon() {
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4"><path d="M3 4h2l2 11h10l2-8H7" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9" cy="19" r="1"/><circle cx="17" cy="19" r="1"/></svg>;
+}
+function SearchIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4" strokeLinecap="round"/></svg>; }

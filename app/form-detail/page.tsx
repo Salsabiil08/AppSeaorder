@@ -168,13 +168,13 @@ export default function FormDetail() {
   const getOpsiTitle = () => {
     switch (opsi) {
       case "acara":
-        return "📅 Detail Acara Besar";
+        return "Detail Acara Besar";
       case "dinein":
-        return "🍽️ Detail Makan di Tempat";
+        return "Detail Makan di Tempat";
       case "takeaway":
-        return "🛍️ Detail Take-Away";
+        return "Detail Take-Away";
       case "antar":
-        return "🛵 Detail Pesan Antar";
+        return "Detail Pesan Antar";
       default:
         return "Detail Layanan";
     }
@@ -203,7 +203,7 @@ export default function FormDetail() {
         {/* Operational Hours Alert */}
         {!isClientOpen && (opsi === "dinein" || (opsi === "takeaway" && takeawayTimeType === "sekarang") || opsi === "antar") && (
           <div className="mb-6 p-4 rounded-2xl bg-amber-500/20 border border-amber-500/30 text-amber-200 text-xs leading-relaxed">
-            ⚠️ <strong>Info Warung:</strong> Saat ini di luar jam operasional (17.00 - 04.00 WIB). Pesanan Anda mungkin akan diproses saat warung buka.
+            <strong>Info Warung:</strong> Saat ini di luar jam operasional (17.00 - 04.00 WIB). Pesanan Anda mungkin akan diproses saat warung buka.
           </div>
         )}
 
@@ -312,7 +312,7 @@ export default function FormDetail() {
                         : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
                     }`}
                   >
-                    ⚡ Sekarang (30m)
+                    Sekarang (30m)
                   </button>
                   <button
                     type="button"
@@ -323,7 +323,7 @@ export default function FormDetail() {
                         : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
                     }`}
                   >
-                    🕒 Jam Tertentu
+                    Jam Tertentu
                   </button>
                 </div>
               </div>
