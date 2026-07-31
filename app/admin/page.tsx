@@ -12,6 +12,8 @@ export default function AdminDashboard() {
   const [menus, setMenus] = useState<Menu[]>([]);
   const [newMenuName, setNewMenuName] = useState("");
   const [newMenuPrice, setNewMenuPrice] = useState("");
+  const [newMenuDescription, setNewMenuDescription] = useState("");
+  const [newMenuImage, setNewMenuImage] = useState("/favicon.ico");
   const [loading, setLoading] = useState(true);
 
   // Filters
@@ -199,8 +201,8 @@ export default function AdminDashboard() {
   const handleAddMenu = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMenuName.trim() || !Number(newMenuPrice)) return;
-    const added = await dbService.addMenu({ nama_menu: newMenuName.trim(), harga: Number(newMenuPrice), kategori: "Makanan", stok_status: "tersedia", image: "/favicon.ico" });
-    setMenus((all) => [...all, added]); setNewMenuName(""); setNewMenuPrice("");
+    const added = await dbService.addMenu({ nama_menu: newMenuName.trim(), harga: Number(newMenuPrice), kategori: "Makanan", stok_status: "tersedia", image: newMenuImage, deskripsi: newMenuDescription });
+    setMenus((all) => [...all, added]); setNewMenuName(""); setNewMenuPrice(""); setNewMenuDescription(""); setNewMenuImage("/favicon.ico");
   };
 
   // Filters
@@ -309,8 +311,7 @@ export default function AdminDashboard() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-3xl text-[#002b5b]">Admin</span>
-              <h1 className="text-2xl font-black bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-200">
+              <h1 className="text-2xl font-black text-white">
                 SeaOrder Admin Dashboard
               </h1>
             </div>
@@ -365,7 +366,7 @@ export default function AdminDashboard() {
 
         <section className="bg-slate-900/60 border border-white/10 p-5 rounded-3xl">
           <h2 className="text-sm font-extrabold text-cyan-300">Menu: Foto, Katalog, Harga & Ketersediaan</h2>
-          <form onSubmit={handleAddMenu} className="mt-3 flex flex-wrap gap-2"><input value={newMenuName} onChange={(e) => setNewMenuName(e.target.value)} placeholder="Nama menu baru" className="rounded-xl bg-slate-800 px-3 py-2 text-xs text-white" /><input value={newMenuPrice} onChange={(e) => setNewMenuPrice(e.target.value)} type="number" placeholder="Harga" className="w-28 rounded-xl bg-slate-800 px-3 py-2 text-xs text-white" /><button className="rounded-xl bg-cyan-400 px-3 py-2 text-xs font-bold text-slate-950">+ Tambah Menu</button></form>
+          <form onSubmit={handleAddMenu} className="mt-3 grid gap-2 md:grid-cols-5"><input value={newMenuName} onChange={(e) => setNewMenuName(e.target.value)} placeholder="Nama menu baru" className="rounded-xl bg-slate-800 px-3 py-2 text-xs text-white" /><input value={newMenuPrice} onChange={(e) => setNewMenuPrice(e.target.value)} type="number" placeholder="Harga" className="rounded-xl bg-slate-800 px-3 py-2 text-xs text-white" /><input value={newMenuDescription} onChange={(e) => setNewMenuDescription(e.target.value)} placeholder="Keterangan menu" className="rounded-xl bg-slate-800 px-3 py-2 text-xs text-white" /><label className="cursor-pointer rounded-xl border border-dashed border-slate-600 px-3 py-2 text-center text-xs text-slate-300">Pilih gambar<input type="file" accept="image/*" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onload = () => setNewMenuImage(String(reader.result)); reader.readAsDataURL(file); } }} /></label><button className="rounded-xl bg-cyan-400 px-3 py-2 text-xs font-bold text-slate-950">Tambah Menu</button></form>
           <div className="mt-4 grid gap-3 md:grid-cols-2">{menus.map((menu) => <div key={menu.id_menu} className="flex items-center gap-3 rounded-2xl bg-slate-950/50 p-3"><img src={menu.image || "/favicon.ico"} alt="" className="h-12 w-12 rounded-xl object-cover" /><div className="min-w-0 flex-1"><input value={menu.nama_menu} onChange={(e) => handleMenuUpdate(menu, { nama_menu: e.target.value })} className="w-full bg-transparent text-xs font-bold text-white outline-none" /><input type="number" value={menu.harga} onChange={(e) => handleMenuUpdate(menu, { harga: Number(e.target.value) })} className="mt-1 w-28 bg-slate-800 p-1 text-xs text-cyan-200" /></div><button onClick={() => handleMenuUpdate(menu, { stok_status: menu.stok_status === "tersedia" ? "habis" : "tersedia" })} className={`rounded-lg px-2 py-1 text-[10px] font-bold ${menu.stok_status === "tersedia" ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"}`}>{menu.stok_status === "tersedia" ? "Tersedia" : "Habis"}</button></div>)}</div>
         </section>
 
@@ -492,8 +493,8 @@ export default function AdminDashboard() {
 
       {/* Selected Order Detail Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="max-w-md w-full bg-slate-900 border border-white/15 rounded-3xl p-6 shadow-2xl space-y-5 animate-slideUp">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 backdrop-blur-md">
+          <div className="mx-auto my-4 max-h-[calc(100vh-2rem)] max-w-md w-full overflow-y-auto bg-slate-900 border border-white/15 rounded-3xl p-6 shadow-2xl space-y-5 animate-slideUp">
             
             {/* Modal Header */}
             <div className="flex justify-between items-start border-b border-white/5 pb-3">

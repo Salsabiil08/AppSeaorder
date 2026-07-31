@@ -153,9 +153,11 @@ export default function KatalogPage() {
 
   const mapMenuImageAndDesc = (item: any) => {
     const name = item.nama_menu.toLowerCase();
-    let image = "/favicon.ico";
+    let image = item.image || "/favicon.ico";
     let deskripsi = item.deskripsi || "Sajian lezat dan segar khas Warung Seafood & Lalapan Lamongan Jaya Asli.";
-    
+
+    // Use an image added by admin; infer an existing local asset only when no image is saved.
+    if (item.image) return { ...item, image, deskripsi };
     if (name.includes("teh")) {
       image = "/EsTeh.png";
     } else if (name.includes("jeruk")) {
@@ -414,11 +416,11 @@ export default function KatalogPage() {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="bg-transparent border-none text-xs font-bold text-cyan-300 focus:outline-none cursor-pointer"
               >
-                <option value="default" className="bg-slate-900 text-slate-200">Rekomendasi</option>
-                <option value="price-asc" className="bg-slate-900 text-slate-200">Harga Terendah</option>
-                <option value="price-desc" className="bg-slate-900 text-slate-200">Harga Tertinggi</option>
-                <option value="alpha-asc" className="bg-slate-900 text-slate-200">Nama A - Z</option>
-                <option value="alpha-desc" className="bg-slate-900 text-slate-200">Nama Z - A</option>
+                <option value="default" className="bg-white text-[#001e3c]">Rekomendasi</option>
+                <option value="price-asc" className="bg-white text-[#001e3c]">Harga Terendah</option>
+                <option value="price-desc" className="bg-white text-[#001e3c]">Harga Tertinggi</option>
+                <option value="alpha-asc" className="bg-white text-[#001e3c]">Nama A - Z</option>
+                <option value="alpha-desc" className="bg-white text-[#001e3c]">Nama Z - A</option>
               </select>
             </div>
           </div>
@@ -467,7 +469,7 @@ export default function KatalogPage() {
                       <img 
                         src={item.image || "/favicon.ico"} 
                         alt={item.nama_menu}
-                        className="object-cover w-full h-full group-hover:scale-[1.05] transition-transform duration-300"
+                        className="object-contain w-full h-full group-hover:scale-[1.03] transition-transform duration-300"
                       />
                       
                       {/* Availability badge */}

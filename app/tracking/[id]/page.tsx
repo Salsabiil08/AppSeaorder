@@ -158,11 +158,11 @@ export default function TrackingPage({ params }: PageProps) {
           
           <div className="relative flex justify-between items-center mb-4">
             {/* Horizontal Line background */}
-            <div className="absolute top-1/2 left-0 right-0 h-1 bg-white/10 -translate-y-1/2 z-0 rounded-full"></div>
+            <div className="absolute top-1/2 left-[8%] right-[8%] h-1 bg-white/10 -translate-y-1/2 z-0 rounded-full"></div>
             {/* Active progress line */}
             <div 
-              className="absolute top-1/2 left-0 h-1 bg-cyan-500 -translate-y-1/2 z-0 rounded-full transition-all duration-500"
-              style={{ width: `${(currentStatusIndex / (statuses.length - 1)) * 100}%` }}
+              className="absolute top-1/2 left-[8%] h-1 bg-cyan-500 -translate-y-1/2 z-0 rounded-full transition-all duration-500"
+              style={{ width: `calc(${(currentStatusIndex / (statuses.length - 1)) * 100}% * 0.84)` }}
             ></div>
 
             {/* Stepper nodes */}

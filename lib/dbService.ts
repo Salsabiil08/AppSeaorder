@@ -607,7 +607,7 @@ export const dbService = {
   async addMenu(menu: Omit<Menu, "id_menu">): Promise<Menu> {
     const localMenus = getMockData<Menu[]>("seaorder_menu", LOCAL_FALLBACK_MENU);
     const newMenu = { ...menu, id_menu: Math.max(0, ...localMenus.map((m) => m.id_menu)) + 1 };
-    try { await supabase.from("menu").insert({ nama_menu: newMenu.nama_menu, harga: newMenu.harga, kategori: newMenu.kategori, stok_status: newMenu.stok_status }); }
+    try { await supabase.from("menu").insert({ nama_menu: newMenu.nama_menu, harga: newMenu.harga, kategori: newMenu.kategori, stok_status: newMenu.stok_status, image: newMenu.image, deskripsi: newMenu.deskripsi }); }
     catch (err) { console.warn("dbService: Supabase addMenu failed, saving locally.", err); }
     setMockData("seaorder_menu", [...localMenus, newMenu]);
     return newMenu;
