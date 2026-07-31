@@ -156,7 +156,11 @@ export default function KatalogPage() {
     let image = "/favicon.ico";
     let deskripsi = item.deskripsi || "Sajian lezat dan segar khas Warung Seafood & Lalapan Lamongan Jaya Asli.";
     
-    if (name.includes("asam") || name.includes("manis")) {
+    if (name.includes("teh")) {
+      image = "/EsTeh.png";
+    } else if (name.includes("jeruk")) {
+      image = "/EsJeruk.webp";
+    } else if (name.includes("ayam") || name.includes("asam")) {
       image = "/AyamAsamManis.png";
     } else if (name.includes("bebek")) {
       image = "/Bebek Bakar.png";
@@ -166,10 +170,6 @@ export default function KatalogPage() {
       image = "/Cumi Krispy.png";
     } else if (name.includes("lele")) {
       image = "/LeleGoreng.png";
-    } else if (name.includes("jeruk")) {
-      image = "/EsJeruk.webp";
-    } else if (name.includes("teh")) {
-      image = "/EsTeh.png";
     }
     
     return {
@@ -359,23 +359,23 @@ export default function KatalogPage() {
         <div className="relative z-10 max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xl font-bold">Sea</span>
-              <h1 className="text-3xl font-extrabold tracking-tight bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-200 to-white">
+              <span className="text-xl font-bold text-white">Sea</span>
+              <h1 className="text-3xl font-extrabold tracking-tight text-white">
                 SeaOrder
               </h1>
             </div>
-            <p className="text-xs text-slate-400 font-medium">Warung Seafood & Lalapan "Lamongan Jaya Asli"</p>
+            <p className="text-xs text-blue-100 font-medium">Warung Seafood & Lalapan "Lamongan Jaya Asli"</p>
           </div>
 
           <div className="flex items-center gap-3">
             {/* Service Chip */}
-            <div className="bg-white/10 border border-white/20 backdrop-blur-md px-4 py-2 rounded-2xl flex items-center gap-2 text-xs font-semibold text-cyan-300 shadow-inner">
+            <div className="bg-white/10 border border-white/20 px-4 py-2 rounded-lg flex items-center gap-2 text-xs font-semibold text-white">
               <span className="h-2 w-2 rounded-full bg-[#1db954]"></span> {opsiDetails}
             </div>
             {/* Ubah Layanan button */}
             <button 
               onClick={() => router.push("/form-detail")}
-              className="px-3 py-2 rounded-xl text-xs font-bold bg-white/5 border border-white/10 text-slate-300 hover:bg-white/15 hover:text-white transition-all"
+              className="px-3 py-2 rounded-lg text-xs font-bold bg-white/10 border border-white/30 text-white hover:bg-white/20 transition-all"
             >
               Ubah Detail
             </button>
@@ -384,7 +384,7 @@ export default function KatalogPage() {
       </header>
 
       {/* Main Container */}
-      <main className="max-w-5xl mx-auto px-4 md:px-6 py-8">
+      <main className="catalog-content max-w-5xl mx-auto px-4 md:px-6 py-8">
         
         {/* Search, Filter, Sort Controls */}
         <div className="mb-8 space-y-4">
@@ -452,17 +452,17 @@ export default function KatalogPage() {
             <p className="text-xs text-slate-500">Coba kata kunci lain atau pilih kategori yang berbeda.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {filteredMenu.map((item) => {
               const qty = cart[item.id_menu]?.quantity || 0;
               return (
                 <div 
                   key={item.id_menu}
-                  className="group bg-slate-900/60 border border-white/10 hover:border-cyan-500/50 rounded-3xl p-4 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
+                  className="group rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[#002b5b] hover:shadow-md flex gap-4"
                 >
-                  <div>
+                  <div className="w-2/5 shrink-0">
                     {/* Image Container */}
-                    <div className="relative aspect-video w-full rounded-2xl overflow-hidden mb-4 bg-slate-800 border border-white/5">
+                    <div className="relative h-full min-h-36 w-full overflow-hidden rounded-lg bg-slate-100 border border-slate-200">
                       {/* Image element */}
                       <img 
                         src={item.image || "/favicon.ico"} 
@@ -485,19 +485,16 @@ export default function KatalogPage() {
                         )
                       )}
                     </div>
-
-                    {/* Content */}
-                    <h3 className="font-bold text-slate-100 group-hover:text-cyan-300 transition-colors mb-1 text-base">
-                      {item.nama_menu}
-                    </h3>
-                    <p className="text-xs text-slate-400 line-clamp-2 mb-3 leading-relaxed">
-                      {item.deskripsi}
-                    </p>
                   </div>
 
                   {/* Pricing and Action */}
-                  <div className="flex items-center justify-between mt-auto pt-3 border-t border-white/5">
-                    <span className="text-cyan-300 font-extrabold text-base">
+                  <div className="flex min-w-0 flex-1 flex-col justify-between">
+                    <div>
+                      <h3 className="font-bold text-[#001e3c] mb-1 text-base">{item.nama_menu}</h3>
+                      <p className="text-xs text-slate-500 line-clamp-3 leading-relaxed">{item.deskripsi}</p>
+                    </div>
+                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-200">
+                    <span className="text-[#002b5b] font-extrabold text-base">
                       Rp {item.harga.toLocaleString("id-ID")}
                     </span>
 
@@ -521,7 +518,7 @@ export default function KatalogPage() {
                       ) : (
                         <button 
                           onClick={() => addToCart(item)}
-                          className="bg-white/10 hover:bg-cyan-500 hover:text-slate-950 border border-white/15 hover:border-cyan-400 text-slate-200 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 active:scale-95"
+                          className="border border-[#002b5b] text-[#002b5b] hover:bg-[#002b5b] hover:text-white px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 active:scale-95"
                         >
                           + Tambah
                         </button>
@@ -529,7 +526,7 @@ export default function KatalogPage() {
                     ) : (
                       <span className="text-[10px] text-slate-500 font-semibold italic">Tidak Tersedia</span>
                     )}
-                  </div>
+                  </div></div>
                 </div>
               );
             })}

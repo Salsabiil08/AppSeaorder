@@ -181,7 +181,7 @@ export default function FormDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f9fb] text-[#001e3c] flex items-center justify-center p-4 md:p-8 font-sans">
+    <div className="seaorder-form min-h-screen bg-[#f7f9fb] text-[#001e3c] flex items-center justify-center p-4 md:p-8 font-sans">
       <div className="max-w-md w-full bg-white border border-slate-200 rounded-xl p-6 md:p-8 shadow-sm transition-all duration-300">
         
         {/* Header */}

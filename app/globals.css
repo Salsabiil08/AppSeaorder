@@ -44,25 +44,21 @@ body {
   scrollbar-width: none;
 }
 
-/* Oceanic Elegance: shared surface treatment for customer and staff workspaces. */
-.oceanic-shell { background: #f7f9fb !important; color: #001e3c !important; }
-.oceanic-shell .bg-slate-950,
-.oceanic-shell .bg-slate-900,
-.oceanic-shell .bg-slate-900\/60,
-.oceanic-shell .bg-slate-900\/40,
-.oceanic-shell .bg-slate-950\/60,
-.oceanic-shell .bg-slate-950\/40,
-.oceanic-shell .bg-slate-950\/20 { background-color: #fff !important; }
-.oceanic-shell .border-white\/10,
-.oceanic-shell .border-white\/5,
-.oceanic-shell .border-white\/15 { border-color: #dbe5ee !important; }
-.oceanic-shell .text-slate-100,
-.oceanic-shell .text-slate-200,
-.oceanic-shell .text-slate-300 { color: #001e3c !important; }
-.oceanic-shell .text-slate-400,
-.oceanic-shell .text-slate-450,
-.oceanic-shell .text-slate-500 { color: #64748b !important; }
-.oceanic-shell button, .oceanic-shell a { transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease; }
-.oceanic-shell button:hover, .oceanic-shell a:hover { transform: translateY(-1px); }
-.oceanic-shell input, .oceanic-shell select, .oceanic-shell textarea { border-radius: 8px !important; }
-@media print { .oceanic-shell button, .oceanic-shell select { display: none !important; } }
+/* Scoped customer form tokens: never override staff dashboards. */
+.seaorder-form input,
+.seaorder-form select,
+.seaorder-form textarea { background: #fff !important; color: #001e3c !important; border-color: #d7e0ea !important; }
+.seaorder-form input::placeholder,
+.seaorder-form textarea::placeholder { color: #94a3b8 !important; }
+.seaorder-form label { color: #007c9d !important; }
+
+/* Catalog uses the PRD white card surface while keeping its header/navigation dark. */
+.catalog-content .bg-slate-900\/60,
+.catalog-content .bg-slate-900\/40 { background-color: #fff !important; }
+.catalog-content .border-white\/10,
+.catalog-content .border-white\/5 { border-color: #dbe5ee !important; }
+.catalog-content .text-slate-100,
+.catalog-content .text-slate-200,
+.catalog-content .text-slate-300 { color: #001e3c !important; }
+.catalog-content .text-slate-400,
+.catalog-content .text-slate-500 { color: #64748b !important; }
